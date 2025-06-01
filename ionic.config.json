@@ -1,0 +1,7 @@
+{
+  "name": "employee-tracker-pwa-client",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

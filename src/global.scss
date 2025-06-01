@@ -1,0 +1,140 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+@import "~@ionic/angular/css/typography.css";
+@import '~@ionic/angular/css/display.css';
+
+/* Optional CSS utils that can be commented out */
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+
+@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+@import "../node_modules/font-awesome/css/font-awesome.min.css";
+@import url('https://fonts.googleapis.com/css2?family=Open Sans&display=swap');
+
+// Font downloaded from Google Fonts
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: normal;
+    src: url('./assets/fonts/OpenSans-Regular.ttf');
+}
+
+// Custom Primary Orange Background color
+.custom-primary-bg {
+    background: #3880FF;
+}
+
+// To make an image opaque
+.opaque-img {
+    opacity: 0.5;
+}
+
+// Changing the dimensions of fluid container
+.container-fluid {
+    height: 100%;
+    width: 100%;
+    font-family: 'Open Sans', sans-serif;
+}
+
+// Applying custom font to Ionic elements
+ion-input, ion-segment, ion-button, ion-card, ion-item, ion-content, ion-label, ion-menu, ion-select, ion-select-option, ion-textarea, ion-datetime, ion-text, ion-searchbar, .custom-font {
+    font-family: 'Open Sans', sans-serif !important;
+}
+
+// <ion-input> placeholder color
+ion-input {
+    --placeholder-font-color: black !important;
+}
+
+// Top margin for content
+.content-top-margin {
+    margin-top: 70px;
+}
+
+// Custom Background for Header and toolbar
+ion-header, ion-toolbar {
+    background: #263238;
+}
+
+// Image dimensions
+.image {
+    height: 200px;
+    width: 200px;
+}
+
+// After hovering over <ion-card>
+ion-card:hover {
+    transform: scale(1.05); 
+}
+
+// Responsive Stacked Table
+.table-stacked th, .table-stacked td {
+    padding: 10px;
+}
+
+.table-stacked thead th {
+    text-align:left;
+}
+
+.table-stacked tbody tr:nth-of-type(odd) {
+    background: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+    .table-stacked tr, .table-stacked td {
+        display: inline-block;
+        width: 100%;
+        padding: 5px;
+        border-top: 1px solid #3880FF;
+    }  
+
+    .table-stacked thead {
+        display: none;
+    }
+
+    .table-stacked td[data-header-title]:before {
+        content: attr(data-header-title)':';
+        display: block;
+        color: #3880FF;
+        font-weight: bold;
+        float: left;
+        width: 35%;
+    }
+
+    .table-stacked tbody {
+        border-collapse: collapse;
+        display: block;
+    }
+
+    .table-stacked tbody tr {
+        margin-bottom: 20px;
+        display: block;
+        text-align: right;
+    }
+
+    .table-stacked tbody tr:nth-of-type(odd) {
+        background: transparent;
+    }
+
+    .table-stacked tr td:nth-of-type(odd) {
+        background: #eee;
+    }
+}

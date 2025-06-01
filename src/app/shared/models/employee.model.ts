@@ -1,0 +1,34 @@
+import Company from "./company.model";
+import CompanyBranch from './company-branch.model';
+import Attendance from './attendance.model';
+
+export default interface Employee {
+    _id?: string;
+    companyId: Company | string;
+    branchId: CompanyBranch | string;
+    position: string;
+    empId?: string;
+    empName: string;
+    mobileNumber: string;
+    workingDays: string[];
+    inTime: string;
+    outTime: string;
+    canPunchInOutAnywhere: boolean;
+    salaryType: string;
+    salaryAmount: number;
+    joiningDate?: string;
+    emailId?: string;
+    dob?: string;
+    address?: string;
+    bankAccNo?: string;
+    bankIfsc?: string;
+    aadhaar?: string;
+    pan?: string;
+    username: string;
+    isActive: boolean;
+    photoImg?: string;
+    hasApproval: boolean;
+    activeAttendanceId?: Attendance | string;
+    nextPossiblePunchIn?: string;
+    createdAt?: string;
+};
