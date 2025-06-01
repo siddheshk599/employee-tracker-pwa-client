@@ -1,7 +1,7 @@
 <ion-content>
 
   <ion-grid>
-    
+
     <ion-row *ngIf="errorMsg">
       <ion-col size="12">
         <p class="text-center text-danger" *ngIf="!errorMsg.status">
@@ -21,7 +21,7 @@
       <ion-col size="12">
         <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
       </ion-col>
-      
+
       <ion-col size-xs="12" size-sm="12" size-md="6">
         <div class="embed-responsive embed-responsive-4by3">
           <ion-skeleton-text animated style="width: 100%;" class="embed-responsive-item"></ion-skeleton-text>
@@ -48,7 +48,7 @@
         <ion-text color="primary" class="text-left">
           <h6>
             <strong>
-              <span *ngIf="(employee._id == storageEmpId)">
+              <span *ngIf="(employee._id === storageEmpId)">
                 Mark Your Attendance:
               </span>
 
@@ -85,13 +85,13 @@
                     Click your pic
                   </ion-button>
                 </div>
-                
+
               </ion-slide>
             </ion-slides>
 
             <!-- Button to switch slides -->
             <ion-button size="medium" fill="outline" color="primary" mode="ios" strong="true" expand="block" (click)="changeSlide(punchedIn)">
-              <ion-icon *ngIf="(slideText == 'Show branch location')" size="medium" name="chevron-back-circle-outline" slot="start"></ion-icon>
+              <ion-icon *ngIf="(slideText === 'Show branch location')" size="medium" name="chevron-back-circle-outline" slot="start"></ion-icon>
 
               {{ slideText }}
 
@@ -112,7 +112,7 @@
                 <div class="embed-responsive embed-responsive-4by3">
                   <div #mapElement class="embed-responsive-item"></div>
                 </div>
-                
+
               </ion-slide>
 
               <ion-slide>
@@ -124,7 +124,7 @@
 
             <!-- Button to switch slides -->
             <ion-button size="medium" fill="outline" color="primary" mode="ios" strong="true" expand="block" (click)="changeSlide(punchedIn)">
-              <ion-icon *ngIf="(slideText == 'Track your location')" size="medium" name="chevron-back-circle-outline" slot="start"></ion-icon>
+              <ion-icon *ngIf="(slideText === 'Track your location')" size="medium" name="chevron-back-circle-outline" slot="start"></ion-icon>
 
               {{ slideText }}
 
@@ -132,7 +132,7 @@
             </ion-button>
           </ion-col>
         </ion-row>
-        
+
       </ion-col>
 
       <ion-col size-xs="12" size-sm="12" size-md="6">
@@ -221,7 +221,7 @@
             <br>
             You're trying to mark your attendance even before 30 minutes of your assigned punch-in time.
             <br>
-            
+
           </h6>
         </ion-text>
       </ion-col>

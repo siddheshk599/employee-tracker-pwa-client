@@ -97,7 +97,7 @@ export class LocationService {
     .then((location) => {
       this.latitude = undefined;
       this.longitude = undefined;
-      
+
       this.latitude = location.coords.latitude;
       this.longitude = location.coords.longitude;
     })
@@ -105,7 +105,7 @@ export class LocationService {
       this.notificationService.showErrorToast("Error in getting location.\nPlease check and enable your GPS and internet connection.", 2000, 'top');
     });
   }
-  
+
   watchPosition(): Observable<any> {
     return this.geolocation.watchPosition({
       timeout: 7000,
@@ -167,14 +167,14 @@ export class LocationService {
   ): Marker<any> {
     let customMarkerIcon = icon({
       iconUrl: 'https://icon-library.com/images/google-maps-gps-icon/google-maps-gps-icon-14.jpg',
-      iconSize: [32, 32], 
+      iconSize: [32, 32],
       popupAnchor: [0, -20]
     });
 
     let newMarker: Marker<any> = marker([location.latitude, location.longitude], { icon: customMarkerIcon })
     .on('click', (event) => {
       newMarker.closeTooltip();
-      
+
       this.setLeafletMapView(leafletMap, {
         latitude: event['latlng']['lat'],
         longitude: event['latlng']['lng']
@@ -223,15 +223,15 @@ export class LocationService {
     let dLat = x1 * Math.PI / 180;
 
     let x2 = point2.longitude - point1.longitude;
-    let dLon = x2 * Math.PI / 180;  
-    
-    let a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
-            Math.cos((point1.latitude * Math.PI / 180)) * Math.cos((point2.latitude * Math.PI / 180)) * 
-            Math.sin(dLon/2) * Math.sin(dLon/2);  
-    
-    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    let dLon = x2 * Math.PI / 180;
+
+    let a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos((point1.latitude * Math.PI / 180)) * Math.cos((point2.latitude * Math.PI / 180)) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+
+    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     let distance = radiusOfEarthInKm * c;
-    
+
     return distance;
   }
 
@@ -282,7 +282,7 @@ export class LocationService {
 
   addIntervalId(id: number) {
     let intervalIds = secureStorage.getItem('intervalIds');
-    if (intervalIds == null) {
+    if (intervalIds === null) {
       let ids: number[] = [];
       ids.push(id);
       secureStorage.setItem('intervalIds', ids);
@@ -318,6 +318,6 @@ export class LocationService {
     } else {
       return this.http.get<any[]>(`${this.baseUrl}/geocoding?type=backward&latitude=${latitude}&longitude=${longitude}`).pipe(catchError(this.processHttpMsgService.handleError)).toPromise();
     }
-    
+
   }
 }

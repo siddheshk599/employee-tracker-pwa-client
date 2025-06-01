@@ -18,7 +18,7 @@
           </h5>
         </ion-text>
       </ion-col>
-      
+
       <ion-col size="12" *ngIf="errorMsg">
         <p class="text-center text-danger" *ngIf="!errorMsg.status">
           <ion-icon name="alert-circle" color="danger"></ion-icon>
@@ -43,7 +43,7 @@
               <ion-skeleton-text animated style="width: 30%;"></ion-skeleton-text>
               <ion-skeleton-text animated style="width: 20%;"></ion-skeleton-text>
               <ion-skeleton-text animated style="width: 10%;"></ion-skeleton-text>
-            </ion-label>     
+            </ion-label>
           </ion-item>
 
         </ion-list>
@@ -64,33 +64,33 @@
               <h5>
                 {{ receiver.empName }}
               </h5>
-              <p *ngIf="(storageEmpPosition == 'admin')">
-                Company Name: 
+              <p *ngIf="(storageEmpPosition === 'admin')">
+                Company Name:
                 <strong>
                   {{ receiver?.companyId['companyName'] }}
                 </strong>
               </p>
-              <p *ngIf="(storageEmpPosition == 'admin' || storageEmpPosition == 'company_admin')">
-                Branch Name: 
+              <p *ngIf="(storageEmpPosition === 'admin' || storageEmpPosition === 'company_admin')">
+                Branch Name:
                 <strong>
                   {{ receiver?.branchId['branchName'] }}
                 </strong>
               </p>
               <p>
-                Position: 
+                Position:
                 <strong>
                   {{ sharedFunctions.formatEmployeePosition(receiver.position) }}
                 </strong>
               </p>
-            </ion-label>     
+            </ion-label>
           </ion-item>
 
-          <ion-item lines="none" *ngIf="(chatReceivers && chatReceivers.length == 0)" class="text-center">
+          <ion-item lines="none" *ngIf="(chatReceivers && chatReceivers.length === 0)" class="text-center">
             <ion-text color="danger" class="text-center">
-              <h6> 
+              <h6>
                 <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
                 <br>
-                No employee record(s). 
+                No employee record(s).
               </h6>
             </ion-text>
           </ion-item>

@@ -24,7 +24,7 @@
           </h5>
         </ion-text>
       </ion-col>
-      
+
       <ion-col size="12" *ngIf="errorMsg">
         <p class="text-center text-danger" *ngIf="!errorMsg.status">
           <ion-icon name="alert-circle" color="danger"></ion-icon>
@@ -39,7 +39,7 @@
 
     <!-- Skeleton attendance detail view -->
     <ion-row *ngIf="(
-      (!isEditMode && (!empAttendances || !empBranchDetails)) || 
+      (!isEditMode && (!empAttendances || !empBranchDetails)) ||
       (isEditMode && !empAttendances)
     )">
       <ion-col size="12" class="d-flex justify-content-center">
@@ -59,27 +59,27 @@
           <ion-col size="6" class="d-flex justify-content-start">
             <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
           </ion-col>
-    
+
           <ion-col size="6" class="d-flex justify-content-end">
             <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
           </ion-col>
-    
+
           <ion-col size="6" class="d-flex justify-content-start">
             <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
           </ion-col>
-    
+
           <ion-col size="6" class="d-flex justify-content-end">
             <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
           </ion-col>
-    
+
           <ion-col size="12" class="d-flex justify-content-start">
             <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
           </ion-col>
-    
+
           <ion-col size="12">
             <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
             <br>
-    
+
             <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
           </ion-col>
         </ion-row>
@@ -88,7 +88,7 @@
 
     <!-- Main attendance detail view for employees -->
     <ion-row *ngIf="(!isEditMode && empAttendances && empBranchDetails)" class="pl-1 pr-1">
-      
+
       <ion-col size="12" class="text-center">
         <ion-text>
           {{ empAttendances[0].inTime | date: 'MMM d, y' }}
@@ -109,7 +109,7 @@
         <ion-text>
           <strong>
 
-            <span *ngIf="(empAttendances[0].status == 'on-time' || empAttendances[0].status == 'late')">
+            <span *ngIf="(empAttendances[0].status === 'on-time' || empAttendances[0].status === 'late')">
               {{ empAttendances[0].inTime | date: 'hh:mm a' }}
             </span>
             <span *ngIf="(empAttendances[0].status != 'on-time' && empAttendances[0].status != 'late')">
@@ -130,7 +130,7 @@
         <ion-text>
           <strong>
 
-            <span *ngIf="(empAttendances[0].status == 'on-time' || empAttendances[0].status == 'late')">
+            <span *ngIf="(empAttendances[0].status === 'on-time' || empAttendances[0].status === 'late')">
               {{ empAttendances[0].outTime | date: 'hh:mm a' }}
             </span>
             <span *ngIf="(empAttendances[0].status != 'on-time' && empAttendances[0].status != 'late')">
@@ -157,10 +157,10 @@
 
       <ion-col size="12" class="text-center">
         <ion-text color="{{
-          (empAttendances[0].status == 'on-time') ? 'success' : (
-            (empAttendances[0].status == 'late') ? 'warning' : (
-              (empAttendances[0].status == 'absent') ? 'danger' : (
-                (empAttendances[0].status == 'holiday') ? 'tertiary' : 'primary'
+          (empAttendances[0].status === 'on-time') ? 'success' : (
+            (empAttendances[0].status === 'late') ? 'warning' : (
+              (empAttendances[0].status === 'absent') ? 'danger' : (
+                (empAttendances[0].status === 'holiday') ? 'tertiary' : 'primary'
               )
             )
           )
@@ -169,8 +169,8 @@
             <span *ngIf="(empAttendances[0].status != 'holiday' && empAttendances[0].status != 'paid_leave' && empAttendances[0].status != 'unpaid_leave')">
               {{ empAttendances[0].status | uppercase }}
             </span>
-            
-            <span *ngIf="(empAttendances[0].status == 'holiday' || empAttendances[0].status == 'paid_leave' || empAttendances[0].status == 'unpaid_leave')">
+
+            <span *ngIf="(empAttendances[0].status === 'holiday' || empAttendances[0].status === 'paid_leave' || empAttendances[0].status === 'unpaid_leave')">
               ON {{ empAttendances[0].status  | uppercase }}
             </span>
           </strong>
@@ -224,9 +224,9 @@
           <ion-select [(ngModel)]="currentStatus">
             <ion-select-option *ngFor="let status of attendanceStatuses" [value]="status">
               <ion-text [color]="(
-                (currentRecord.status == 'on-time') ? 'success' : (
-                  (currentRecord.status == 'late' || currentRecord.status == 'holiday') ? 'tertiary' : (
-                    (currentRecord.status == 'absent') ? 'danger' : 'primary'
+                (currentRecord.status === 'on-time') ? 'success' : (
+                  (currentRecord.status === 'late' || currentRecord.status === 'holiday') ? 'tertiary' : (
+                    (currentRecord.status === 'absent') ? 'danger' : 'primary'
                   )
                 )
               )">
@@ -238,7 +238,7 @@
           </ion-select>
         </ion-item>
 
-        <ion-text class="text-center" color="tertiary" *ngIf="(currentRecord.status == 'holiday')">
+        <ion-text class="text-center" color="tertiary" *ngIf="(currentRecord.status === 'holiday')">
           <strong>{{ currentRecord.status | titlecase }}</strong>
         </ion-text>
       </ion-col>
@@ -248,7 +248,7 @@
       </ion-col>
 
       <ion-col size="12" class="fixed-bottom">
-        <ion-button strong="true" color="primary" mode="ios" expand="block" size="medium" [disabled]="(storageEmpPosition == 'branch_manager')" (click)="statusUpdateConfirmation()">
+        <ion-button strong="true" color="primary" mode="ios" expand="block" size="medium" [disabled]="(storageEmpPosition === 'branch_manager')" (click)="statusUpdateConfirmation()">
           <ion-icon slot="start" name="pencil-outline" size="medium"></ion-icon>
           Update
         </ion-button>

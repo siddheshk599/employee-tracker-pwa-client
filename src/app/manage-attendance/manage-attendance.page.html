@@ -48,7 +48,7 @@
 
         <table class="table table-striped table-hover">
           <thead>
-            <tr>   
+            <tr>
               <th scope="col" *ngFor="let number of sharedFunctions.generateArray(3)">
                 <ion-skeleton-text animated style="width: 65%;"></ion-skeleton-text>
               </th>
@@ -125,7 +125,7 @@
 
           <tbody>
 
-            <tr *ngIf="(attendancesForDate.length == 0)" class="pt-0 pb-0">
+            <tr *ngIf="(attendancesForDate.length === 0)" class="pt-0 pb-0">
               <td colspan="3" class="text-center pt-0 pb-0">
                 <ion-text color="danger">
                   <h6>
@@ -145,14 +145,14 @@
 
               <td class="text-center pl-1 pt-0 pr-0 pb-0" data-header="Status">
                 <ion-text [color]="(
-                  (attendance.status == 'on-time') ? 'success' : (
-                    (attendance.status == 'late' || attendance.status == 'holiday') ? 'tertiary' : (
-                      (attendance.status == 'absent') ? 'danger' : 'primary'
+                  (attendance.status === 'on-time') ? 'success' : (
+                    (attendance.status === 'late' || attendance.status === 'holiday') ? 'tertiary' : (
+                      (attendance.status === 'absent') ? 'danger' : 'primary'
                     )
                   )
                 )">
                   <strong>
-                    {{ ((attendance.status == 'on-time' || attendance.status == 'late') ? 'present' : attendance['status']) | titlecase }}
+                    {{ ((attendance.status === 'on-time' || attendance.status === 'late') ? 'present' : attendance['status']) | titlecase }}
                   </strong>
                 </ion-text>
               </td>
@@ -168,7 +168,7 @@
         </table>
 
       </ion-col>
-      
+
     </ion-row>
 
   </ion-grid>

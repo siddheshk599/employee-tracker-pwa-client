@@ -103,19 +103,19 @@ export class StatementPage {
       (attendances) => {
 
         attendances.forEach((attendance) => {
-          if (attendance.status == 'paid_leave') {
-            if (this.employee.salaryType == 'daily' || this.employee.salaryType == 'weekly') {
+          if (attendance.status === 'paid_leave') {
+            if (this.employee.salaryType === 'daily' || this.employee.salaryType === 'weekly') {
               ++empSalaryDetails.paidLeavesCount;
 
-            } else if (this.employee.salaryType == 'hourly') {
+            } else if (this.employee.salaryType === 'hourly') {
               empSalaryDetails.paidLeavesCount += this.getDiffInHours(new Date(attendance.inTime), new Date(attendance.outTime));
 
             }
-          } else if (attendance.status == 'on-time' || attendance.status == 'late') {
-            if (this.employee.salaryType == 'daily' || this.employee.salaryType == 'weekly') {
+          } else if (attendance.status === 'on-time' || attendance.status === 'late') {
+            if (this.employee.salaryType === 'daily' || this.employee.salaryType === 'weekly') {
               ++empSalaryDetails.workingCount;
 
-            } else if (this.employee.salaryType == 'hourly') {
+            } else if (this.employee.salaryType === 'hourly') {
               empSalaryDetails.workingCount += this.getDiffInHours(new Date(attendance.inTime), new Date(attendance.outTime));
 
             }
@@ -129,7 +129,7 @@ export class StatementPage {
               empSalaryDetails.advanceTaken += salAdv.advanceAmount;
             });
 
-            if (this.employee.salaryType == 'weekly') {
+            if (this.employee.salaryType === 'weekly') {
               empSalaryDetails.workingCount = (empSalaryDetails.workingCount * 1.0) / this.employee.workingDays.length;
 
               empSalaryDetails.paidLeavesCount = (empSalaryDetails.paidLeavesCount * 1.0) / this.employee.workingDays.length;
@@ -146,7 +146,7 @@ export class StatementPage {
               (empSalaryDetails.totalSalary - empSalaryDetails.advanceTaken)
             );
 
-            if (this.employee.salaryType == 'weekly') {
+            if (this.employee.salaryType === 'weekly') {
               empSalaryDetails.workingCount = this.sharedFunctions.roundTo4Decimals(
                 (empSalaryDetails.workingCount * this.employee.workingDays.length)
               );
@@ -174,12 +174,12 @@ export class StatementPage {
   }
 
   changeReportMonth(mode: 'forward' | 'backward' | 'selectOption'): void {
-    if (mode == 'forward') {
+    if (mode === 'forward') {
       if (this.selectedMonthIndex != -1) {
         if (this.selectedMonthIndex >= 0 && this.selectedMonthIndex < (this.salaryMonths.length - 1)) {
           ++this.selectedMonthIndex;
 
-        } else if (this.selectedMonthIndex == (this.salaryMonths.length - 1)) {
+        } else if (this.selectedMonthIndex === (this.salaryMonths.length - 1)) {
           this.selectedMonthIndex = (
             ++this.selectedMonthIndex % this.salaryMonths.length
           );
@@ -187,18 +187,18 @@ export class StatementPage {
         }
       }
 
-    } else if (mode == 'backward') {
+    } else if (mode === 'backward') {
       if (this.selectedMonthIndex != -1) {
         if (this.selectedMonthIndex > 0 && this.selectedMonthIndex < this.salaryMonths.length) {
           --this.selectedMonthIndex;
 
-        } else if (this.selectedMonthIndex == 0) {
+        } else if (this.selectedMonthIndex === 0) {
           this.selectedMonthIndex += this.salaryMonths.length - 1;
 
         }
       }
 
-    } else if (mode == 'selectOption') {
+    } else if (mode === 'selectOption') {
       this.selectedMonthIndex = this.salaryMonths.map((elem) => elem.monthAndYear).indexOf(this.selectedSalaryMonth);
     }
 

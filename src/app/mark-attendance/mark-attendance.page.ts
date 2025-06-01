@@ -140,7 +140,7 @@ export class MarkAttendancePage {
       if (this.liveTrackingSubscription === undefined)
         this.startLiveTracking();
 
-      if (secureStorage.getItem('attendanceId') == null && this.employee.activeAttendanceId['_id']) {
+      if (secureStorage.getItem('attendanceId') === null && this.employee.activeAttendanceId['_id']) {
         secureStorage.setItem('attendanceId', this.employee.activeAttendanceId['_id']);
       }
     }
@@ -210,7 +210,7 @@ export class MarkAttendancePage {
         if (!this.punchedIn) {
           this.notPunchedInSlides.getActiveIndex()
           .then((activeIndex) => {
-            this.slideText = (activeIndex == 0) ? 'View Camera Pic' : 'Show branch location';
+            this.slideText = (activeIndex === 0) ? 'View Camera Pic' : 'Show branch location';
           })
           .catch((error) => console.error('Error in getting the active index of slide:', error));
         }
@@ -233,7 +233,7 @@ export class MarkAttendancePage {
       }
 
       // Add location history to map
-      if (this.liveTrackingHistory.length == 0) {
+      if (this.liveTrackingHistory.length === 0) {
         this.liveTrackingHistory.push({
           latitude: activeAttendance.punchInLocation.latitude,
           longitude: activeAttendance.punchInLocation.longitude,
@@ -281,8 +281,8 @@ export class MarkAttendancePage {
               let lastLocation = this.liveTrackingHistory[this.liveTrackingHistory.length - 1];
 
               if (
-                (lastLocation.latitude == this.empLocation.latitude) &&
-                (lastLocation.longitude == this.empLocation.longitude)
+                (lastLocation.latitude === this.empLocation.latitude) &&
+                (lastLocation.longitude === this.empLocation.longitude)
               ) {
                 this.liveTrackingHistory.pop();
               }
@@ -410,7 +410,7 @@ export class MarkAttendancePage {
                 punchInImg: attendanceImg.imagePath,
                 punchInLocation: this.empLocation,
                 punchInDoneBy: (
-                  (secureStorage.getItem('position') == 'branch_manager') ?
+                  (secureStorage.getItem('position') === 'branch_manager') ?
                   secureStorage.getItem('empId') :
                   this.employee._id
                 ),
@@ -546,7 +546,7 @@ export class MarkAttendancePage {
                 punchOutImg: response.imagePath,
                 punchOutLocation: this.empLocation,
                 punchOutDoneBy: (
-                  (secureStorage.getItem('position') == 'branch_manager') ?
+                  (secureStorage.getItem('position') === 'branch_manager') ?
                   secureStorage.getItem('empId') :
                   this.employee._id
                 )

@@ -65,9 +65,9 @@ export class ManageAttendancePage {
     this.errorMsg = undefined;
 
     this.attendanceService.getAttendanceDatesOfAllEmpByQuery(`${
-      (empPosition == 'admin') ? '?admin=true' : (
-        (empPosition == 'company_admin') ? `?companyId=${secureStorage.getItem('companyId')}` : (
-          (empPosition == 'branch_manager') ? `?branchId=${secureStorage.getItem('branchId')}`: ''
+      (empPosition === 'admin') ? '?admin=true' : (
+        (empPosition === 'company_admin') ? `?companyId=${secureStorage.getItem('companyId')}` : (
+          (empPosition === 'branch_manager') ? `?branchId=${secureStorage.getItem('branchId')}`: ''
         )
       )
     }`).subscribe(
@@ -97,9 +97,9 @@ export class ManageAttendancePage {
     this.attendancesForDate = undefined;
 
     this.attendanceService.getAllAttendances(`${
-      (empPosition == 'admin') ? '?admin=true' : (
-        (empPosition == 'company_admin') ? `?companyId=${secureStorage.getItem('companyId')}` : (
-          (empPosition == 'branch_manager') ? `?branchId=${secureStorage.getItem('branchId')}`: ''
+      (empPosition === 'admin') ? '?admin=true' : (
+        (empPosition === 'company_admin') ? `?companyId=${secureStorage.getItem('companyId')}` : (
+          (empPosition === 'branch_manager') ? `?branchId=${secureStorage.getItem('branchId')}`: ''
         )
       )
     }&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`).subscribe(
@@ -117,7 +117,7 @@ export class ManageAttendancePage {
   }
 
   changeReportDate(mode: 'forward' | 'backward' | 'selectOption', empPosition: string): void {
-    if (mode == 'forward') {
+    if (mode === 'forward') {
       if (this.selectedDateIndex != -1) {
         if (
           (this.selectedDateIndex >= 0) &&
@@ -125,12 +125,12 @@ export class ManageAttendancePage {
         ) {
           ++this.selectedDateIndex;
 
-        } else if (this.selectedDateIndex == (this.attendanceDates.length - 1)) {
+        } else if (this.selectedDateIndex === (this.attendanceDates.length - 1)) {
           this.selectedDateIndex = ((this.selectedDateIndex + 1) % this.attendanceDates.length);
         }
       }
 
-    } else if (mode == 'backward') {
+    } else if (mode === 'backward') {
       if (this.selectedDateIndex != -1) {
         if (
           (this.selectedDateIndex > 0) &&
@@ -138,11 +138,11 @@ export class ManageAttendancePage {
         ) {
           --this.selectedDateIndex;
 
-        } else if (this.selectedDateIndex == 0) {
+        } else if (this.selectedDateIndex === 0) {
           this.selectedDateIndex += this.attendanceDates.length - 1;
         }
       }
-    } else if (mode == 'selectOption') {
+    } else if (mode === 'selectOption') {
       this.selectedDateIndex = this.attendanceDates.map((elem) => elem.startDate).indexOf(this.selectedAttendanceDate);
     }
 

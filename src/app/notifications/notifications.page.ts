@@ -62,13 +62,13 @@ export class NotificationsPage {
   }
 
   segmentChange(event: any): void {
-    if (event.target.value == 'notification') {
+    if (event.target.value === 'notification') {
       this.getChatsByEmpIdAsSenderOrReceiver(this.storageEmpId);
     }
   }
 
   chatSocketSwitch(mode: 'connect' | 'disconnect'): void {
-    if (mode == 'connect') {
+    if (mode === 'connect') {
       if (!this.socket) {
         this.socket = io.connect(this.serverBaseURL, {
           query: {
@@ -81,10 +81,10 @@ export class NotificationsPage {
         this.socketChatMsgSubscription = this.getChatMessagesFromSocket().subscribe(
           (chatMsg) => {
             if (
-              ((this.storageEmpId == chatMsg.senderEmpId['_id']) ||
-              (this.storageEmpId == chatMsg.receiverEmpId['_id'])) &&
-              ((this.receiverEmpId == chatMsg.senderEmpId['_id']) ||
-              (this.receiverEmpId == chatMsg.receiverEmpId['_id']))
+              ((this.storageEmpId === chatMsg.senderEmpId['_id']) ||
+              (this.storageEmpId === chatMsg.receiverEmpId['_id'])) &&
+              ((this.receiverEmpId === chatMsg.senderEmpId['_id']) ||
+              (this.receiverEmpId === chatMsg.receiverEmpId['_id']))
             )
               this.filteredChats.push(chatMsg);
           },
@@ -118,7 +118,7 @@ export class NotificationsPage {
     modal.then((response) => {
       response.onDidDismiss()
       .then((response) => {
-        if (response.data instanceof Object == true) {
+        if (response.data instanceof Object === true) {
           if (response.data.hasOwnProperty("receiverEmployee")) {
             if (response.data['receiverEmployee']) {
               this.receiverEmployee = response.data['receiverEmployee'];
@@ -162,16 +162,16 @@ export class NotificationsPage {
   }
 
   getNotifications(empId: string): void {
-    this.notifications = [...this.chats.filter((chat) => chat.receiverEmpId['_id'] == empId)];
+    this.notifications = [...this.chats.filter((chat) => chat.receiverEmpId['_id'] === empId)];
   }
 
   filterChats(): void {
     if (this.receiverEmpId) {
       this.filteredChats = [...this.chats.filter((chat) => (
         (
-          (chat.senderEmpId['_id'] == this.storageEmpId && chat.receiverEmpId['_id'] == this.receiverEmpId)
+          (chat.senderEmpId['_id'] === this.storageEmpId && chat.receiverEmpId['_id'] === this.receiverEmpId)
         ) || (
-          (chat.senderEmpId['_id'] == this.receiverEmpId && chat.receiverEmpId['_id'] == this.storageEmpId)
+          (chat.senderEmpId['_id'] === this.receiverEmpId && chat.receiverEmpId['_id'] === this.storageEmpId)
         )
       ))];
     }

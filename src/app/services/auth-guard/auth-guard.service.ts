@@ -16,7 +16,7 @@ export class AuthGuardService implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     let loggedIn = secureStorage.getItem('loggedIn');
 
-    if (loggedIn == "true")
+    if (loggedIn === "true")
       return true;
     else {
       this.router.navigateByUrl('/login');

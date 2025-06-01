@@ -20,7 +20,7 @@ export class LoginPage implements OnInit {
   errorMsg;
   formErrors = formErrors;
   validationMessages = validationMessages;
-  
+
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
@@ -88,7 +88,7 @@ export class LoginPage implements OnInit {
 
   logIn(): void {
     this.errorMsg = undefined;
-    
+
     let credentials = Object.assign({}, this.loginForm.value);
 
     let loader = this.notificationService.createLoader('Validating credentials...');
@@ -126,7 +126,7 @@ export class LoginPage implements OnInit {
                 secureStorage.setItem('companyId', employee.companyId['_id']);
                 secureStorage.setItem('branchId', employee.branchId['_id']);
 
-                if (employee.position == "admin" || employee.position == 'company_admin' || employee.position == 'branch_manager')
+                if (employee.position === "admin" || employee.position === 'company_admin' || employee.position === 'branch_manager')
                   secureStorage.setItem('position', employee.position);
                 else
                   secureStorage.setItem('position', 'employee');
@@ -149,7 +149,7 @@ export class LoginPage implements OnInit {
         .catch((error) => console.error("Error in dismissing the loader:", error));
 
         this.errorMsg = <any>error;
-        
+
         this.notificationService.showErrorToast('Password or username is incorrect.', 2000, 'top');
       }
     );

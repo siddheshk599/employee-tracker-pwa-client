@@ -20,7 +20,7 @@ export class EditBranchesAndPositionsPage implements OnInit {
   @Input() inputData: any[];
   @Input() dataIndex: number;
   @Input() isBranchEditMode: boolean;
-  
+
   errorMsg: any;
   locationAddress: string;
   googleMapsURL: SafeResourceUrl;
@@ -162,7 +162,7 @@ export class EditBranchesAndPositionsPage implements OnInit {
     }
 
     loader.then((response) => response.dismiss())
-    .catch((error) => console.error("Error in dismissing loader: ", error)); 
+    .catch((error) => console.error("Error in dismissing loader: ", error));
   }
 
   getLocationByAddress(): void {
@@ -179,7 +179,7 @@ export class EditBranchesAndPositionsPage implements OnInit {
         (result) => {
           loader.then((response) => response.dismiss())
           .catch((error) => console.error('Error in dismissing the loader:', error));
-        
+
           if (result != undefined && result !== null) {
             this.branchLocation = {
               latitude: this.sharedFunctions.roundTo4Decimals(result[0].latitude),
@@ -234,7 +234,7 @@ export class EditBranchesAndPositionsPage implements OnInit {
 
   editBranchDetails(): void {
     this.errorMsg = undefined;
-    
+
     let branchId = this.inputData[this.dataIndex]._id;
     let changes = {};
 
@@ -242,7 +242,7 @@ export class EditBranchesAndPositionsPage implements OnInit {
       let formControl = this.editBranchForm.controls[controlName];
 
       if (formControl.dirty) {
-        if (controlName == 'branchLatitude' || controlName == 'branchLongitude') {
+        if (controlName === 'branchLatitude' || controlName === 'branchLongitude') {
 
           let coordName = controlName.split("ch")[1].toLowerCase();
           changes['branchLocation.' + coordName] = formControl.value;
@@ -306,7 +306,7 @@ export class EditBranchesAndPositionsPage implements OnInit {
 
     if (newPosition.length > 0 && positionRegex.test(newPosition)) {
       if (newPosition != 'admin') {
-        if (this.inputData[0].positions.indexOf(newPosition) == -1) {
+        if (this.inputData[0].positions.indexOf(newPosition) === -1) {
           let loader = this.notificationService.createLoader(`Updating the position name to '${newPosition}'...`);
 
           loader.then((response) => response.present())

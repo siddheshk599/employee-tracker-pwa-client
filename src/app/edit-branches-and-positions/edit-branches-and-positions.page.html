@@ -41,7 +41,7 @@
             <ion-icon slot="icon-only" size="medium" name="search-outline"></ion-icon>
           </ion-button>
         </ion-item>
-        
+
         <div class="embed-responsive embed-responsive-16by9">
           <iframe class="embed-responsive-item" [src]="googleMapsURL"></iframe>
 
@@ -95,7 +95,7 @@
                     <ion-label color="primary" position="floating">
                       Latitude
                     </ion-label>
-    
+
                     <ion-input id="branchLatitude" type="number" formControlName="branchLatitude" (ionChange)="onBranchLocationChange()"></ion-input>
                   </ion-item>
 
@@ -109,7 +109,7 @@
                     <ion-label color="primary" position="floating">
                       Longitude
                     </ion-label>
-    
+
                     <ion-input id="branchLongitude" type="number" formControlName="branchLongitude" (ionChange)="onBranchLocationChange()"></ion-input>
                   </ion-item>
 
@@ -156,7 +156,7 @@
       </ion-col>
 
       <ion-col size-xs="12" size-sm="4" size-md="3">
-        <ion-button mode="ios" fill="solid" color="primary" expand="block" strong="true" size="medium" (click)="editPosition()" [disabled]="(newPosition?.length == 0)">
+        <ion-button mode="ios" fill="solid" color="primary" expand="block" strong="true" size="medium" (click)="editPosition()" [disabled]="(newPosition?.length === 0)">
           <ion-icon slot="start" name="pencil-outline" size="medium"></ion-icon>
           Edit
         </ion-button>
@@ -186,7 +186,7 @@
                 <small>{{ position }}</small>
               </td>
             </tr>
-            
+
           </tbody>
         </table>
       </ion-col>

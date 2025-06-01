@@ -77,12 +77,12 @@ export class AttendanceMapPage {
     );
 
     coordinates.forEach((coordinate, idx) => {
-      if ((idx == 0) || (idx == coordinates.length - 1)) {
+      if ((idx === 0) || (idx === coordinates.length - 1)) {
         this.locationService.addMarkerInLeafletMap(
           this.leafletMap,
           coordinate,
           `Signed ${
-            (idx == 0) ? 'in' : 'out'
+            (idx === 0) ? 'in' : 'out'
           } at: ${this.datePipe.transform(coordinate['createdAt'], 'MMM d, y hh:mm:ss a')}`
         );
 

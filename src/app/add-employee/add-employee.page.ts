@@ -67,7 +67,7 @@ export class AddEmployeePage implements OnInit {
       empId: ['', [Validators.minLength(2), Validators.maxLength(7), Validators.pattern("^[a-zA-Z0-9]+$")]],
 
       empName: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(25), Validators.pattern("^[a-zA-Z \.\']+$")]],
-      
+
       mobileNumber: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10), Validators.pattern(/^[6-9]\d{9}$/g)]],
 
       workingDays: [['monday', 'tuesday', 'wednesday', 'thursday', 'friday'], [Validators.required, Validators.min(1), Validators.max(7)]],
@@ -95,7 +95,7 @@ export class AddEmployeePage implements OnInit {
       bankIfsc: ['', [Validators.minLength(11), Validators.maxLength(11), Validators.pattern("^[A-Z]{4}[A-Z0-9]{7}$")]],
 
       aadhaar: ['', [Validators.minLength(12), Validators.maxLength(12), Validators.pattern(/^[0-9]{12}$/g)]],
-      
+
       pan: ['', [Validators.minLength(10), Validators.maxLength(10), Validators.pattern("^[A-Z]{5}[0-9]{4}[A-Z]{1}$")]],
 
       username: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(15), Validators.pattern(/^[A-Za-z0-9_]*$/)]],
@@ -107,7 +107,7 @@ export class AddEmployeePage implements OnInit {
       hasApproval: [true, Validators.required],
 
       photoImg: '',
-      
+
       nextPossiblePunchIn: ''
     });
 
@@ -152,7 +152,7 @@ export class AddEmployeePage implements OnInit {
   }
 
   profileApprovalAlert(): void {
-    if (this.storageEmpPosition == 'branch_manager') {
+    if (this.storageEmpPosition === 'branch_manager') {
       let alert = this.notificationService.createAlert(
         'Ask for profile approval?',
         'Would you like to submit employee profile for approval or add profile without approval?',
@@ -174,7 +174,7 @@ export class AddEmployeePage implements OnInit {
           }
         ]
       );
-  
+
       alert.then((response) => response.present())
       .catch((error) => console.error("Error in presenting the alert:", error));
 
@@ -195,7 +195,7 @@ export class AddEmployeePage implements OnInit {
 
     addEmpFormValue.empName = addEmpFormValue.empName.trim();
 
-    addEmpFormValue['canPunchInOutAnywhere'] = (addEmpFormValue['position'] == 'branch_manager') ? true : false;
+    addEmpFormValue['canPunchInOutAnywhere'] = (addEmpFormValue['position'] === 'branch_manager') ? true : false;
 
     addEmpFormValue['nextPossiblePunchIn'] = addEmpFormValue['inTime'];
 
@@ -211,8 +211,8 @@ export class AddEmployeePage implements OnInit {
           let base64Data = dataUri.split('base64,')[1];
 
           this.fileOpsService.addAnImage(
-            base64Data, 
-            `${key.split('I')[0].toLowerCase()}_${new Date().getTime()}.jpg`, 
+            base64Data,
+            `${key.split('I')[0].toLowerCase()}_${new Date().getTime()}.jpg`,
             key.split('I')[0]
           ).subscribe(
             (result) => {
@@ -223,7 +223,7 @@ export class AddEmployeePage implements OnInit {
                 addEmpFormValue[key] = result.imagePath;
                 ++count;
 
-                if (count == imageListKeyCount) {
+                if (count === imageListKeyCount) {
                   this.employeeService.addEmployee(addEmpFormValue)
                   .subscribe(
                     (response) => {
@@ -231,7 +231,7 @@ export class AddEmployeePage implements OnInit {
                       .catch((error) => console.error('Error in dismissing the loader:', error));
 
                       this.notificationService.showToast('Employee details added successfully.', 2000, 'top');
-                      
+
                       this.resetForm();
                     },
                     (error) => {
@@ -267,12 +267,12 @@ export class AddEmployeePage implements OnInit {
           .catch((error) => console.error('Error in dismissing the loader:', error));
 
           this.notificationService.showToast('Employee details added successfully.', 2000, 'top');
-          
+
           this.resetForm();
         },
         (error) => {
           this.errorMsg = <any>error;
-          
+
           loader.then((response) => response.dismiss())
           .catch((error) => console.error('Error in dismissing the loader:', error));
 
@@ -283,7 +283,7 @@ export class AddEmployeePage implements OnInit {
   }
 
   onImageSelected(event, imageName) {
-    if (imageName == 'photoImg') {
+    if (imageName === 'photoImg') {
       this.imageFileList['photoImg'] = event.target.files[0];
     }
   }
@@ -299,7 +299,7 @@ export class AddEmployeePage implements OnInit {
   getCompanyDetails(): void {
     this.errorMsg = undefined;
 
-    if (this.storageEmpPosition == 'admin') {
+    if (this.storageEmpPosition === 'admin') {
       this.companyService.getAllCompanyDetails()
       .subscribe(
         (companies) => {
@@ -315,19 +315,19 @@ export class AddEmployeePage implements OnInit {
         },
         (error) => {
           this.errorMsg = <any>error;
-  
+
           this.notificationService.showErrorToast('Error in getting the company details.', 2000, 'top');
         }
       );
-    } else if (this.storageEmpPosition == 'company_admin' || this.storageEmpPosition == 'branch_manager') {
+    } else if (this.storageEmpPosition === 'company_admin' || this.storageEmpPosition === 'branch_manager') {
       this.employeeService.getEmployeeDetailsById(secureStorage.getItem('empId')).subscribe(
         (employee) => {
           this.companies = [];
 
-          if (this.storageEmpPosition == 'branch_manager') {
-            employee.companyId['branches'] = employee.companyId['branches'].filter((branch) => (branch._id == employee.branchId['_id']));
+          if (this.storageEmpPosition === 'branch_manager') {
+            employee.companyId['branches'] = employee.companyId['branches'].filter((branch) => (branch._id === employee.branchId['_id']));
           }
-          
+
           this.companies.push(employee.companyId);
 
           if (this.companies[this.companyIndex] && this.companies[this.companyIndex].branches) {
@@ -339,7 +339,7 @@ export class AddEmployeePage implements OnInit {
         },
         (error) => {
           this.errorMsg = <any>error;
-  
+
           this.notificationService.showErrorToast('Error in getting the company details.', 2000, 'top');
         }
       );

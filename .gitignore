@@ -34,3 +34,5 @@ npm-debug.log*
 /plugins
 .firebase/
 .firebaserc
+firebase.json
+firebase-debug.log

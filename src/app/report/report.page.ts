@@ -95,7 +95,7 @@ export class ReportPage {
         this.errorMsg = <any>error;
 
         this.notificationService.showErrorToast(`Error in getting ${
-          (secureStorage.getItem('position') == 'employee') ? "your" : "employee's"
+          (secureStorage.getItem('position') === 'employee') ? "your" : "employee's"
         } details.`, 2000, 'top');
       }
     );
@@ -171,7 +171,7 @@ export class ReportPage {
   }
 
   changeReportMonth(mode: 'forward' | 'backward' | 'selectOption'): void {
-    if (mode == 'forward') {
+    if (mode === 'forward') {
       if (this.selectedMonthIndex != -1) {
         if (
           (this.selectedMonthIndex >= 0) &&
@@ -179,12 +179,12 @@ export class ReportPage {
         ) {
           ++this.selectedMonthIndex;
 
-        } else if (this.selectedMonthIndex == (this.attendanceMonths.length - 1)) {
+        } else if (this.selectedMonthIndex === (this.attendanceMonths.length - 1)) {
           this.selectedMonthIndex = ((this.selectedMonthIndex + 1) % this.attendanceMonths.length);
         }
       }
 
-    } else if (mode == 'backward') {
+    } else if (mode === 'backward') {
       if (this.selectedMonthIndex != -1) {
         if (
           (this.selectedMonthIndex > 0) &&
@@ -192,12 +192,12 @@ export class ReportPage {
         ) {
           --this.selectedMonthIndex;
 
-        } else if (this.selectedMonthIndex == 0) {
+        } else if (this.selectedMonthIndex === 0) {
           this.selectedMonthIndex += this.attendanceMonths.length - 1;
         }
       }
 
-    } else if (mode == 'selectOption') {
+    } else if (mode === 'selectOption') {
       this.selectedMonthIndex = this.attendanceMonths.map((elem) => elem.monthAndYear).indexOf(this.selectedAttendanceMonth);
     }
 
@@ -245,10 +245,10 @@ export class ReportPage {
 
   getBgStyling(status: string): string {
     return `background: ${
-      (status == 'on-time') ? '#2dd36f' : (
-        (status == 'late') ? '#ffc409' : (
-          (status == 'absent') ? '#ff4961' : (
-            (status == 'holiday') ? '#6a64ff' : '#ff6f00'
+      (status === 'on-time') ? '#2dd36f' : (
+        (status === 'late') ? '#ffc409' : (
+          (status === 'absent') ? '#ff4961' : (
+            (status === 'holiday') ? '#6a64ff' : '#ff6f00'
           )
         )
       )

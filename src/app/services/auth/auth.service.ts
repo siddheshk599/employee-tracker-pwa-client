@@ -51,7 +51,7 @@ export class AuthService {
 
   setEmployeeId() {
     let empId = secureStorage.getItem("empId");
-    if (empId == null) {
+    if (empId === null) {
       let jwt = secureStorage.getItem('jwtToken');
       let decodedJwt = jwt_decode(jwt);
       secureStorage.setItem('empId', decodedJwt["_id"]);

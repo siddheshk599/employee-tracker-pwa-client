@@ -19,7 +19,7 @@ export class InterceptorService implements HttpInterceptor {
     let authReq = req;
     const authService = this.injector.get(AuthService);
 
-    if (loggedIn == "true") {
+    if (loggedIn === "true") {
       const token = secureStorage.getItem('jwtToken');
       authReq = req.clone({ headers: req.headers.set('Authorization', 'bearer ' + token)});
     }
@@ -41,13 +41,13 @@ export class UnauthorizedInterceptor implements HttpInterceptor {
 
     const token = secureStorage.getItem('jwtToken');
     const authReq = req.clone({ headers: req.headers.set('Authorization', 'bearer ' + token) });
-      
+
     return next.handle(req).pipe(
       tap((event: HttpEvent<any>) => {
         // Do nothing.
       }, (error) => {
         if (error instanceof HttpErrorResponse) {
-          if (error.status == 401 && token) {
+          if (error.status === 401 && token) {
             authService.checkJwtToken();
             authService.logOut();
           }

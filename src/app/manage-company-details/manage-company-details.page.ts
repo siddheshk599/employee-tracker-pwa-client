@@ -74,9 +74,9 @@ export class ManageCompanyDetailsPage implements OnInit {
     this.selectedCompanyIndex = 0;
     this.newPosition = "";
 
-    if (this.empPosition == 'admin')
+    if (this.empPosition === 'admin')
       this.segmentButton = 'addCompany';
-    else if (this.empPosition == 'company_admin')
+    else if (this.empPosition === 'company_admin')
       this.segmentButton = 'addBranch';
   }
 
@@ -275,7 +275,7 @@ export class ManageCompanyDetailsPage implements OnInit {
         this.location
       );
 
-      if (mode == 'companyDetails') {
+      if (mode === 'companyDetails') {
         this.editCompanyForm.patchValue({
           companyLatitude: this.location.latitude,
           companyLongitude: this.location.longitude
@@ -313,7 +313,7 @@ export class ManageCompanyDetailsPage implements OnInit {
               this.location
             );
 
-            if (mode == 'companyDetails') {
+            if (mode === 'companyDetails') {
               this.editCompanyForm.patchValue({
                 companyLatitude: this.location.latitude,
                 companyLongitude: this.location.longitude
@@ -354,7 +354,7 @@ export class ManageCompanyDetailsPage implements OnInit {
   getCompanyDetails(segmentName: string): void {
     this.errorMsg = undefined;
 
-    if (this.empPosition == 'admin') {
+    if (this.empPosition === 'admin') {
       this.companyService.getAllCompanyDetails()
       .subscribe(
         (companies) => {
@@ -362,7 +362,7 @@ export class ManageCompanyDetailsPage implements OnInit {
           this.companies = [...companies];
           this.selectedCompanyId = (this.companies.length > 0) ? this.companies[0]._id : undefined;
 
-          if (segmentName == 'companyDetails' || segmentName == 'branchesAndPositions')
+          if (segmentName === 'companyDetails' || segmentName === 'branchesAndPositions')
             this.onCompanyChange(segmentName);
         },
         (error) => {
@@ -371,7 +371,7 @@ export class ManageCompanyDetailsPage implements OnInit {
           this.notificationService.showErrorToast(`Error in getting the details of companies.`, 2000, 'top');
         }
       );
-    } else if (this.empPosition == 'company_admin') {
+    } else if (this.empPosition === 'company_admin') {
       this.employeeService.getEmployeeDetailsById(secureStorage.getItem('empId')).subscribe(
         (employee) => {
           this.companies = [];
@@ -382,7 +382,7 @@ export class ManageCompanyDetailsPage implements OnInit {
             companyId: employee.companyId['_id']
           });
 
-          if (segmentName == 'companyDetails' || segmentName == 'branchesAndPositions')
+          if (segmentName === 'companyDetails' || segmentName === 'branchesAndPositions')
             this.onCompanyChange(segmentName);
         },
         (error) => {
@@ -398,7 +398,7 @@ export class ManageCompanyDetailsPage implements OnInit {
     this.selectedCompanyIndex = this.companies.map((company) => company._id)
     .indexOf(this.selectedCompanyId);
 
-    if (mode == 'companyDetails') {
+    if (mode === 'companyDetails') {
       this.editCompanyForm.patchValue({
         companyName: this.companies[this.selectedCompanyIndex]?.companyName,
         companyAddress: this.companies[this.selectedCompanyIndex]?.companyAddress,
@@ -585,7 +585,7 @@ export class ManageCompanyDetailsPage implements OnInit {
       let formControl = this.editCompanyForm.controls[controlName];
 
       if (formControl.dirty) {
-        if (controlName == 'companyLatitude' || controlName == 'companyLongitude') {
+        if (controlName === 'companyLatitude' || controlName === 'companyLongitude') {
 
           let coordName = controlName.split("ny")[1].toLowerCase();
           changes['companyLocation.' + coordName] = this.sharedFunctions.roundTo4Decimals(formControl.value);
@@ -624,9 +624,9 @@ export class ManageCompanyDetailsPage implements OnInit {
   }
 
   resetFormToNullValues(formName: string): void {
-    if (formName == "addCompanyForm") {
+    if (formName === "addCompanyForm") {
       this.addCompanyForm.reset();
-    } else if (formName == "addBranchForm") {
+    } else if (formName === "addBranchForm") {
       this.addBranchForm.reset();
     }
   }
@@ -652,11 +652,11 @@ export class ManageCompanyDetailsPage implements OnInit {
       dataIndex: index
     };
 
-    if (dataToEdit == 'branch') {
+    if (dataToEdit === 'branch') {
       data['inputData'] = this.companies[this.selectedCompanyIndex].branches;
       data['isBranchEditMode'] = true;
 
-    } else if (dataToEdit == 'position') {
+    } else if (dataToEdit === 'position') {
       data['inputData'] = [this.companies[this.selectedCompanyIndex]];
       data['isBranchEditMode'] = false;
     }
@@ -672,7 +672,7 @@ export class ManageCompanyDetailsPage implements OnInit {
         let receivedData = response?.data?.updatedData;
 
         if (receivedData) {
-          if (dataToEdit == 'branch') {
+          if (dataToEdit === 'branch') {
             this.companies[this.selectedCompanyIndex].branches[index] = receivedData;
 
           } else {
@@ -692,7 +692,7 @@ export class ManageCompanyDetailsPage implements OnInit {
 
     if (newPosition.length > 0 && positionRegex.test(newPosition)) {
       if (newPosition != 'admin') {
-        if (positionIndex == -1) {
+        if (positionIndex === -1) {
           let loader = this.notificationService.createLoader('Adding new employee position...');
 
           loader.then((response) => response.present())
@@ -737,7 +737,7 @@ export class ManageCompanyDetailsPage implements OnInit {
 
   deletionConfirmation(dataToDelete: string, index: number): void {
     let alert = this.notificationService.createAlert(`Delete ${dataToDelete}?`, `Do you really want to delete the ${dataToDelete} ${
-      (dataToDelete == 'branch') ?
+      (dataToDelete === 'branch') ?
       `'${
         this.companies[this.selectedCompanyIndex].branches[index].branchName
       }'?. All the records of branch employees will also be deleted.` :
@@ -751,7 +751,7 @@ export class ManageCompanyDetailsPage implements OnInit {
       },
       {
         text: 'YES',
-        handler: () => (dataToDelete == 'branch') ? this.deleteBranch(index) : this.deletePosition(index)
+        handler: () => (dataToDelete === 'branch') ? this.deleteBranch(index) : this.deletePosition(index)
       }
     ]);
 
@@ -800,7 +800,7 @@ export class ManageCompanyDetailsPage implements OnInit {
     this.employeeService.getEmployeesByCompanyId(selectedCompany._id, `?position=${selectedCompany.positions[positionIndex]}`)
     .subscribe(
       (employees) => {
-        if (employees.length == 0) {
+        if (employees.length === 0) {
 
           this.companyService.deleteAPositionByCompanyId(
             this.companies[this.selectedCompanyIndex]._id,

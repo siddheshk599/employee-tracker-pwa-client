@@ -106,7 +106,7 @@ export class LeavePage implements OnInit {
         this.errorMsg = <any>error;
 
         this.notificationService.showErrorToast(`Error in getting ${
-          (secureStorage.getItem('position') == 'employee') ? "your" : "employee's"
+          (secureStorage.getItem('position') === 'employee') ? "your" : "employee's"
         } details.`, 2000, 'top');
       }
     );

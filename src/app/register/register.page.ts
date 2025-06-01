@@ -234,7 +234,7 @@ export class RegisterPage implements OnInit {
   }
 
   onImageSelected(event, imageName) {
-    if (imageName == 'photoImg') {
+    if (imageName === 'photoImg') {
       this.imageFileList['photoImg'] = event.target.files[0];
     }
   }
@@ -434,7 +434,7 @@ export class RegisterPage implements OnInit {
                 registerUserFormValue[key] = result.imagePath;
                 ++count;
 
-                if (count == imageListKeyCount) {
+                if (count === imageListKeyCount) {
                   this.employeeService.addEmployee(registerUserFormValue)
                   .subscribe(
                     (response) => {

@@ -80,7 +80,7 @@ export class HomePage implements OnInit {
   }
 
   segmentChange(event) {
-    if (event.target.value == 'employeeJob' && this.employee.position == 'branch_manager') {
+    if (event.target.value === 'employeeJob' && this.employee.position === 'branch_manager') {
       this.errorMsg = undefined;
 
       this.employeeService.getEmployeesByBranchId(this.employee.branchId['_id'], '?isActive=true&hasApproval=true').subscribe(
@@ -127,7 +127,7 @@ export class HomePage implements OnInit {
       );
 
       if (employee.activeAttendanceId) {
-        if (secureStorage.getItem('attendanceId') == null && this.employee.activeAttendanceId['_id']) {
+        if (secureStorage.getItem('attendanceId') === null && this.employee.activeAttendanceId['_id']) {
           secureStorage.setItem('attendanceId', this.employee.activeAttendanceId['_id']);
         }
 

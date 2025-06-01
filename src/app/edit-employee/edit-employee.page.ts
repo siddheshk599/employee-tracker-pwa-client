@@ -216,7 +216,7 @@ export class EditEmployeePage implements OnInit {
     this.companies = [];
     this.errorMsg = undefined;
 
-    if (this.storageEmpPosition == 'admin') {
+    if (this.storageEmpPosition === 'admin') {
       this.companyService.getAllCompanyDetails().subscribe(
         (companies) => {
           this.companies = [...companies];
@@ -231,7 +231,7 @@ export class EditEmployeePage implements OnInit {
           this.notificationService.showErrorToast("Error in getting company's details.", 2000, 'top')
         }
       );
-    } else if (this.storageEmpPosition == 'company_admin') {
+    } else if (this.storageEmpPosition === 'company_admin') {
       this.companies.push(<Company>this.employee['companyId']);
 
       this.editEmployeeForm.patchValue({
@@ -239,8 +239,8 @@ export class EditEmployeePage implements OnInit {
         branchId: this.employee.branchId['_id']
       });
 
-    } else if (this.storageEmpPosition == 'branch_manager') {
-      this.employee.companyId['branches'] = this.employee.companyId['branches'].filter((branch) => branch._id == secureStorage.getItem('branchId'));
+    } else if (this.storageEmpPosition === 'branch_manager') {
+      this.employee.companyId['branches'] = this.employee.companyId['branches'].filter((branch) => branch._id === secureStorage.getItem('branchId'));
 
       this.companies.push(<Company>this.employee.companyId);
 
@@ -252,9 +252,9 @@ export class EditEmployeePage implements OnInit {
   }
 
   onChange(event, fieldName: string): void {
-    if (fieldName == 'photoImg') {
+    if (fieldName === 'photoImg') {
       this.imageChanges[fieldName] = event.target.files[0];
-    } else if (fieldName == 'companyId') {
+    } else if (fieldName === 'companyId') {
       this.companyIndex = this.companies.map((company) => company._id).indexOf(this.editEmployeeForm.get('companyId').value);
 
       this.editEmployeeForm.patchValue({
@@ -271,7 +271,7 @@ export class EditEmployeePage implements OnInit {
     .catch((error) => console.error("Error in presenting the loader:", error));
 
     let detailChanges = {};
-    detailChanges['hasApproval'] = (this.storageEmpPosition == 'branch_manager') ? false : true;
+    detailChanges['hasApproval'] = (this.storageEmpPosition === 'branch_manager') ? false : true;
 
     Object.keys(this.editEmployeeForm.controls).forEach((controlName) => {
       let formControl = this.editEmployeeForm.controls[controlName];
@@ -295,7 +295,7 @@ export class EditEmployeePage implements OnInit {
             (response) => {
               if (response.success) {
                 ++count;
-                if (count == imageChangesKeyCount) {
+                if (count === imageChangesKeyCount) {
                   count = 0;
                 }
 
@@ -326,7 +326,7 @@ export class EditEmployeePage implements OnInit {
                 detailChanges[key] = response.imagePath;
                 ++count;
 
-                if (count == imageChangesKeyCount) {
+                if (count === imageChangesKeyCount) {
                   this.updateEmployeeDetails(this.employee, detailChanges, loader);
                 }
               } else {
@@ -342,7 +342,7 @@ export class EditEmployeePage implements OnInit {
         }
       }
     } else {
-      detailChanges['hasApproval'] = (this.storageEmpPosition == 'branch_manager') ? false : true;
+      detailChanges['hasApproval'] = (this.storageEmpPosition === 'branch_manager') ? false : true;
 
       this.updateEmployeeDetails(this.employee, detailChanges, loader);
     }

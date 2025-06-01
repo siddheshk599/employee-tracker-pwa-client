@@ -37,7 +37,7 @@ export class AttendanceDetailPage {
     if (!this.isEditMode) {
       this.getBranchDetailsById(secureStorage.getItem('branchId'));
     } else {
-      this.currentStatus = (this.currentRecord.status == 'on-time' || this.currentRecord.status == 'late') ? 'present' : this.currentRecord.status;
+      this.currentStatus = (this.currentRecord.status === 'on-time' || this.currentRecord.status === 'late') ? 'present' : this.currentRecord.status;
     }
 
   }
@@ -58,7 +58,7 @@ export class AttendanceDetailPage {
         this.errorMsg = <any>error;
 
         this.notificationService.showErrorToast(`Error in getting ${
-          (this.storageEmpPosition == 'employee') ? 'your' : "employee's"
+          (this.storageEmpPosition === 'employee') ? 'your' : "employee's"
         } punch-in location details. Kindly try again.`, 2000, 'top')
       }
     );
@@ -67,12 +67,12 @@ export class AttendanceDetailPage {
   changeReportDate(direction: string): void {
     let currentIdx = this.empAttendances.indexOf(this.currentRecord);
 
-    if (direction == 'forward') {
+    if (direction === 'forward') {
       if (currentIdx != -1) {
         if (currentIdx >= 0 && currentIdx < (this.empAttendances.length - 1)) {
           this.currentRecord = this.empAttendances[++currentIdx];
 
-        } else if (currentIdx == (this.empAttendances.length - 1)) {
+        } else if (currentIdx === (this.empAttendances.length - 1)) {
           this.currentRecord = this.empAttendances[(
             ++currentIdx % this.empAttendances.length
           )];
@@ -80,12 +80,12 @@ export class AttendanceDetailPage {
         }
       }
 
-    } else if (direction == 'backward') {
+    } else if (direction === 'backward') {
       if (currentIdx != -1) {
         if (currentIdx > 0 && currentIdx < this.empAttendances.length) {
           this.currentRecord = this.empAttendances[--currentIdx];
 
-        } else if (currentIdx == 0) {
+        } else if (currentIdx === 0) {
           currentIdx += this.empAttendances.length - 1;
           this.currentRecord = this.empAttendances[currentIdx];
 
@@ -93,7 +93,7 @@ export class AttendanceDetailPage {
       }
     }
 
-    this.currentStatus = (this.currentRecord.status == 'on-time' || this.currentRecord.status == 'late') ? 'present' : this.currentRecord.status;
+    this.currentStatus = (this.currentRecord.status === 'on-time' || this.currentRecord.status === 'late') ? 'present' : this.currentRecord.status;
   }
 
   statusUpdateConfirmation(): void {
@@ -125,13 +125,13 @@ export class AttendanceDetailPage {
 
   changeStatus(oldStatus: string, newStatus: string): void {
     let updatedAttendance = {};
-    oldStatus = (oldStatus == 'on-time' || oldStatus == 'late') ? 'present' : oldStatus;
+    oldStatus = (oldStatus === 'on-time' || oldStatus === 'late') ? 'present' : oldStatus;
 
-    if (oldStatus == 'present') {
-      if (newStatus == 'absent') {
+    if (oldStatus === 'present') {
+      if (newStatus === 'absent') {
         this.deleteAttendanceById(this.currentRecord._id, oldStatus, newStatus);
 
-      } else if (newStatus == 'paid_leave' || newStatus == 'unpaid_leave') {
+      } else if (newStatus === 'paid_leave' || newStatus === 'unpaid_leave') {
         updatedAttendance = {
           punchInImg: '',
           punchOutImg: '',
@@ -144,8 +144,8 @@ export class AttendanceDetailPage {
         this.updateAttendanceById(this.currentRecord._id, updatedAttendance, oldStatus, newStatus);
       }
 
-    } else if (oldStatus == 'absent') {
-      if (newStatus == 'present') {
+    } else if (oldStatus === 'absent') {
+      if (newStatus === 'present') {
         updatedAttendance = {
           empId: this.currentRecord.empId['_id'],
           inTime: this.currentRecord.inTime,
@@ -162,7 +162,7 @@ export class AttendanceDetailPage {
 
         this.addAttendance(updatedAttendance, oldStatus, newStatus);
 
-      } else if (newStatus == 'paid_leave' || newStatus == 'unpaid_leave') {
+      } else if (newStatus === 'paid_leave' || newStatus === 'unpaid_leave') {
         updatedAttendance = {
           empId: this.currentRecord.empId['_id'],
           inTime: this.currentRecord.inTime,
@@ -180,9 +180,9 @@ export class AttendanceDetailPage {
         this.addAttendance(updatedAttendance, oldStatus, newStatus);
       }
 
-    } else if (oldStatus == 'paid_leave' || oldStatus == 'unpaid_leave') {
+    } else if (oldStatus === 'paid_leave' || oldStatus === 'unpaid_leave') {
 
-      if (newStatus == 'present') {
+      if (newStatus === 'present') {
         updatedAttendance = {
           punchInDoneBy: secureStorage.getItem('empId'),
           punchOutDoneBy: secureStorage.getItem('empId'),
@@ -192,10 +192,10 @@ export class AttendanceDetailPage {
 
         this.updateAttendanceById(this.currentRecord._id, updatedAttendance, oldStatus, newStatus);
 
-      } else if (newStatus == 'absent') {
+      } else if (newStatus === 'absent') {
         this.deleteAttendanceById(this.currentRecord._id, oldStatus, newStatus);
 
-      } else if ((newStatus == 'paid_leave' || newStatus == 'unpaid_leave') && (oldStatus != newStatus)) {
+      } else if ((newStatus === 'paid_leave' || newStatus === 'unpaid_leave') && (oldStatus != newStatus)) {
         updatedAttendance = {
           status: newStatus
         };

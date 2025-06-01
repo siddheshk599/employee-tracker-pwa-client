@@ -15,7 +15,7 @@ export class EmployeeManagerAuthGuardService  implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     let storageEmpPosition = secureStorage.getItem('position');
-    if (storageEmpPosition == "employee" || storageEmpPosition == 'branch_manager')
+    if (storageEmpPosition === "employee" || storageEmpPosition === 'branch_manager')
       return true;
     else {
       this.notificationService.showToast("Only employees and branch managers can access this page.", 2000, 'top');

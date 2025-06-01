@@ -40,7 +40,7 @@ export class ChatReceiversPage {
   }
 
   getChatReceivers(empId: string, companyId: string): void {
-    if (this.storageEmpPosition == 'admin') {
+    if (this.storageEmpPosition === 'admin') {
       this.employeeService.getAllEmployeeDetails('?isActive=true&hasApproval=true').subscribe(
         (chatReceivers) => {
           this.chatReceivers = [...chatReceivers.filter((receiver) => receiver._id != this.storageEmpId)];
@@ -51,7 +51,7 @@ export class ChatReceiversPage {
           this.notificationService.showErrorToast('Error in getting employee details. Please try again after some time.', 2000, 'top');
         }
       );
-    } else if (this.storageEmpPosition == 'company_admin') {
+    } else if (this.storageEmpPosition === 'company_admin') {
       this.employeeService.getChatReceivers(empId, companyId)
       .subscribe(
         (chatReceivers) => {
@@ -69,15 +69,15 @@ export class ChatReceiversPage {
       .subscribe(
         (chatReceivers) => {
           this.chatReceivers = [...chatReceivers.filter((receiver) => (
-            receiver.position == 'admin' ||
-            receiver.position == 'company_admin' ||
+            receiver.position === 'admin' ||
+            receiver.position === 'company_admin' ||
             (
-              (receiver.position == 'branch_manager' &&
-              receiver.branchId['_id'] == secureStorage.getItem('branchId'))
+              (receiver.position === 'branch_manager' &&
+              receiver.branchId['_id'] === secureStorage.getItem('branchId'))
             ) ||
             (
               (receiver.position != 'admin' && receiver.position != 'company_admin' && receiver.position != 'branch_manager') &&
-              receiver.branchId['_id'] == secureStorage.getItem('branchId')
+              receiver.branchId['_id'] === secureStorage.getItem('branchId')
             )
           ))];
         },

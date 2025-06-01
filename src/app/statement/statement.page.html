@@ -18,7 +18,7 @@
           </h5>
         </ion-text>
       </ion-col>
-      
+
       <ion-col size="12" *ngIf="errorMsg">
         <p class="text-center text-danger" *ngIf="!errorMsg.status">
           <ion-icon name="alert-circle" color="danger"></ion-icon>
@@ -113,12 +113,12 @@
         <ion-text>
           <strong>
             <small>
-              Paid Leaves (in  
-              <span *ngIf="(employee.salaryType == 'daily' || employee.salaryType == 'weekly')">
+              Paid Leaves (in
+              <span *ngIf="(employee.salaryType === 'daily' || employee.salaryType === 'weekly')">
                 Day(s))
               </span>
 
-              <span *ngIf="(employee.salaryType == 'hourly')">
+              <span *ngIf="(employee.salaryType === 'hourly')">
                 Hour(s))
               </span>
             </small>

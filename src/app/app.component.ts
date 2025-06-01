@@ -24,7 +24,7 @@ export class AppComponent {
   networkConnectionSubscription: Subscription;
   networkDisconnectionSubscription: Subscription;
   noInternetModal: Promise<HTMLIonModalElement>;
-  
+
   constructor(
     private authService: AuthService,
     private network: Network,
@@ -41,11 +41,11 @@ export class AppComponent {
       this.initialBgGpsConfig();
 
     let loggedIn = eval(secureStorage.getItem('loggedIn'));
-    if (loggedIn == null)
+    if (loggedIn === null)
       secureStorage.setItem('loggedIn', 'false');
 
     this.checkOnlineStatus();
-    
+
       // this.onlineStatus().subscribe(
     //   (isOnline) => {
     //     let modal;
@@ -94,7 +94,7 @@ export class AppComponent {
     });
   }
 
-  initialBgGpsConfig(): void {  
+  initialBgGpsConfig(): void {
     let bgGpsConfig: BackgroundGeolocationConfig = {
       locationProvider: BackgroundGeolocationLocationProvider.DISTANCE_FILTER_PROVIDER,
       desiredAccuracy: 10,

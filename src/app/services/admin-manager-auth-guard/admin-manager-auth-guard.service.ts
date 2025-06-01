@@ -15,7 +15,7 @@ export class AdminManagerAuthGuardService implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     let storageEmpPosition = secureStorage.getItem('position');
-    if (storageEmpPosition == "admin" || storageEmpPosition == 'company_admin' || storageEmpPosition == "branch_manager")
+    if (storageEmpPosition === "admin" || storageEmpPosition === 'company_admin' || storageEmpPosition === "branch_manager")
       return true;
     else {
       this.notificationService.showToast("Only admins and managers can access this page.", 2000, 'top');

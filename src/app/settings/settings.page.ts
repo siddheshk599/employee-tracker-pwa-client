@@ -267,24 +267,24 @@ export class SettingsPage implements OnInit {
   }
 
   segmentChange(event: any) {
-    if (event.target.value == 'salary') {
+    if (event.target.value === 'salary') {
       this.minAdvanceDate = new Date().toISOString();
       this.getEmployeeSalaryDetails();
 
-    } else if (event.target.value == 'profile') {
+    } else if (event.target.value === 'profile') {
       this.getEmployeeDetailsById();
 
-    } else if (event.target.value == 'approvals') {
+    } else if (event.target.value === 'approvals') {
       this.approvalSegmentButton = 'leaveApproval';
       this.getUnapprovedLeaves();
 
-    } else if (event.target.value == 'employeeApproval') {
+    } else if (event.target.value === 'employeeApproval') {
       this.getUnapprovedEmployees();
 
-    } else if (event.target.value == 'leaveApproval') {
+    } else if (event.target.value === 'leaveApproval') {
       this.getUnapprovedLeaves();
 
-    } else if (event.target.value == 'salaryAdvanceApproval') {
+    } else if (event.target.value === 'salaryAdvanceApproval') {
       this.getUnapprovedSalaryAdvances();
     }
   }
@@ -327,19 +327,19 @@ export class SettingsPage implements OnInit {
       (attendances) => {
 
         attendances.forEach((attendance) => {
-          if (attendance.status == 'paid_leave') {
-            if (this.employee.salaryType == 'daily' || this.employee.salaryType == 'weekly') {
+          if (attendance.status === 'paid_leave') {
+            if (this.employee.salaryType === 'daily' || this.employee.salaryType === 'weekly') {
               ++empSalaryDetails.paidLeavesCount;
 
-            } else if (this.employee.salaryType == 'hourly') {
+            } else if (this.employee.salaryType === 'hourly') {
               empSalaryDetails.paidLeavesCount += this.getDiffInHours(new Date(attendance.inTime), new Date(attendance.outTime));
 
             }
-          } else if (attendance.status == 'on-time' || attendance.status == 'late') {
-            if (this.employee.salaryType == 'daily' || this.employee.salaryType == 'weekly') {
+          } else if (attendance.status === 'on-time' || attendance.status === 'late') {
+            if (this.employee.salaryType === 'daily' || this.employee.salaryType === 'weekly') {
               ++empSalaryDetails.workingCount;
 
-            } else if (this.employee.salaryType == 'hourly') {
+            } else if (this.employee.salaryType === 'hourly') {
               empSalaryDetails.workingCount += this.getDiffInHours(new Date(attendance.inTime), new Date(attendance.outTime));
 
             }
@@ -353,7 +353,7 @@ export class SettingsPage implements OnInit {
               empSalaryDetails.advanceTaken += salAdv.advanceAmount;
             });
 
-            if (this.employee.salaryType == 'weekly') {
+            if (this.employee.salaryType === 'weekly') {
               empSalaryDetails.workingCount = (empSalaryDetails.workingCount * 1.0) / this.employee.workingDays.length;
 
               empSalaryDetails.paidLeavesCount = (empSalaryDetails.paidLeavesCount * 1.0) / this.employee.workingDays.length;
@@ -370,7 +370,7 @@ export class SettingsPage implements OnInit {
               (empSalaryDetails.totalSalary - empSalaryDetails.advanceTaken)
             );
 
-            if (this.employee.salaryType == 'weekly') {
+            if (this.employee.salaryType === 'weekly') {
               empSalaryDetails.workingCount = this.sharedFunctions.roundTo4Decimals(
                 (empSalaryDetails.workingCount * this.employee.workingDays.length)
               );
@@ -411,7 +411,7 @@ export class SettingsPage implements OnInit {
       (employee) => {
         this.employee = employee;
 
-        if (this.storageEmpPosition == 'employee') {
+        if (this.storageEmpPosition === 'employee') {
           this.empWorkingDays = "",
 
           employee.workingDays.forEach((day) => {
@@ -443,7 +443,7 @@ export class SettingsPage implements OnInit {
     this.unApprovedEmployees = undefined;
     this.errorMsg = undefined;
 
-    if (this.storageEmpPosition == 'admin') {
+    if (this.storageEmpPosition === 'admin') {
       this.employeeService.getAllEmployeeDetails('?hasApproval=false')
       .subscribe(
         (employees) => {
@@ -456,7 +456,7 @@ export class SettingsPage implements OnInit {
         }
       );
 
-    } else if (this.storageEmpPosition ==  'company_admin') {
+    } else if (this.storageEmpPosition ===  'company_admin') {
       this.employeeService.getEmployeesByCompanyId(secureStorage.getItem('companyId'), '?hasApproval=false').subscribe(
         (employees) => {
           this.unApprovedEmployees = [...employees];
@@ -486,11 +486,11 @@ export class SettingsPage implements OnInit {
 
         this.unApprovedLeaves = [...leaves];
 
-        if (this.storageEmpPosition == 'company_admin') {
-          this.unApprovedLeaves = [...leaves.filter((leave) => leave.empId['companyId']['_id'] == secureStorage.getItem('companyId') && leave.empId['position'] != 'admin' && leave.empId['position'] != 'company_admin')];
+        if (this.storageEmpPosition === 'company_admin') {
+          this.unApprovedLeaves = [...leaves.filter((leave) => leave.empId['companyId']['_id'] === secureStorage.getItem('companyId') && leave.empId['position'] != 'admin' && leave.empId['position'] != 'company_admin')];
 
-        } else if (this.storageEmpPosition == 'branch_manager') {
-          this.unApprovedLeaves = [...leaves.filter((leave) => leave.empId['branchId']['_id'] == secureStorage.getItem('branchId') && leave.empId['position'] != 'admin' && leave.empId['position'] != 'company_admin' && leave.empId['position'] != 'branch_manager')];
+        } else if (this.storageEmpPosition === 'branch_manager') {
+          this.unApprovedLeaves = [...leaves.filter((leave) => leave.empId['branchId']['_id'] === secureStorage.getItem('branchId') && leave.empId['position'] != 'admin' && leave.empId['position'] != 'company_admin' && leave.empId['position'] != 'branch_manager')];
         }
       },
       (error) => {
@@ -518,11 +518,11 @@ export class SettingsPage implements OnInit {
 
         this.unApprovedSalaryAdvances = [...salaryAdvances];
 
-        if (this.storageEmpPosition == 'company_admin') {
-          this.unApprovedSalaryAdvances = [...salaryAdvances.filter((leave) => leave.empId['companyId']['_id'] == secureStorage.getItem('companyId') && leave.empId['position'] != 'admin' && leave.empId['position'] != 'company_admin')];
+        if (this.storageEmpPosition === 'company_admin') {
+          this.unApprovedSalaryAdvances = [...salaryAdvances.filter((leave) => leave.empId['companyId']['_id'] === secureStorage.getItem('companyId') && leave.empId['position'] != 'admin' && leave.empId['position'] != 'company_admin')];
 
-        } else if (this.storageEmpPosition == 'branch_manager') {
-          this.unApprovedSalaryAdvances = [...salaryAdvances.filter((advance) => advance.empId['branchId']['_id'] == secureStorage.getItem('branchId') && advance.empId['position'] != 'admin' && advance.empId['position'] != 'company_admin' && advance.empId['position'] != 'branch_manager')];
+        } else if (this.storageEmpPosition === 'branch_manager') {
+          this.unApprovedSalaryAdvances = [...salaryAdvances.filter((advance) => advance.empId['branchId']['_id'] === secureStorage.getItem('branchId') && advance.empId['position'] != 'admin' && advance.empId['position'] != 'company_admin' && advance.empId['position'] != 'branch_manager')];
         }
       },
       (error) => {
@@ -540,7 +540,7 @@ export class SettingsPage implements OnInit {
     let updateProfileFormValue = this.updateProfileForm.value;
     let changes = {};
 
-    if (this.storageEmpPosition == 'employee')
+    if (this.storageEmpPosition === 'employee')
       delete updateProfileFormValue['workingDays'];
 
     Object.keys(this.updateProfileForm.controls).forEach((controlName) => {
@@ -551,7 +551,7 @@ export class SettingsPage implements OnInit {
       }
     });
 
-    if (Object.keys(changes).length == 0) {
+    if (Object.keys(changes).length === 0) {
       this.notificationService.showErrorToast("Since you've not made any changes to your profile, it won't get updated.", 2000, 'top');
     } else {
       let loader = this.notificationService.createLoader('Updating your profile...');
@@ -623,7 +623,7 @@ export class SettingsPage implements OnInit {
       let leaveFromDate = leave.fromDate.split('T')[0];
       let attendanceInTime = employee.activeAttendanceId['inTime'].split('T')[0];
 
-      if (leaveFromDate == attendanceInTime) {
+      if (leaveFromDate === attendanceInTime) {
         let inTime = new Date(employee.activeAttendanceId['inTime'].split('T')[0] + 'T' + employee.inTime.split('T')[1]);
         let outTime = new Date(employee.activeAttendanceId['inTime'].split('T')[0] + 'T' + employee.outTime.split('T')[1]);
 
@@ -634,7 +634,7 @@ export class SettingsPage implements OnInit {
           punchOutLocation: employee.activeAttendanceId['punchInLocation'],
           punchOutDoneBy: secureStorage.getItem('empId'),
           status: (
-            (leave.leaveType == 'paid') ? 'paid_leave' : 'unpaid_leave'
+            (leave.leaveType === 'paid') ? 'paid_leave' : 'unpaid_leave'
           ),
         };
 
@@ -705,7 +705,7 @@ export class SettingsPage implements OnInit {
           punchInDoneBy: secureStorage.getItem('empId'),
           punchOutDoneBy: secureStorage.getItem('empId'),
           status: (
-            (leave.leaveType == 'paid') ? 'paid_leave' : 'unpaid_leave'
+            (leave.leaveType === 'paid') ? 'paid_leave' : 'unpaid_leave'
           ),
           locationHistory: []
         };
@@ -732,7 +732,7 @@ export class SettingsPage implements OnInit {
           (attendance) => {
             ++addedAttendanceCount;
 
-            if (addedAttendanceCount == leaveAttendances.length) {
+            if (addedAttendanceCount === leaveAttendances.length) {
               this.employeeService.updateEmployeeDetailsById(employee._id, {
                 nextPossiblePunchIn: nextPossiblePunchIn
               }).subscribe(

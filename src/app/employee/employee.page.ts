@@ -50,10 +50,10 @@ export class EmployeePage {
     employees: Employee[],
     empPosition: string
   ): Employee[] {
-    if (empPosition == 'admin') {
+    if (empPosition === 'admin') {
       employees = [...employees.filter((employee) => (employee._id != this.storageEmpId))];
 
-    } else if (empPosition == 'company_admin') {
+    } else if (empPosition === 'company_admin') {
       this.employees = [...employees.filter(
         (employee) => (
           employee.position != 'admin' &&
@@ -61,7 +61,7 @@ export class EmployeePage {
         )
       )];
 
-    } else if (empPosition == 'branch_manager') {
+    } else if (empPosition === 'branch_manager') {
       this.employees = [...employees.filter(
         (employee) => (
           employee.position != 'admin' &&
@@ -77,7 +77,7 @@ export class EmployeePage {
   getAllEmployeeDetails(): void {
     this.errorMsg = undefined;
 
-    if (this.storageEmpPosition == 'admin') {
+    if (this.storageEmpPosition === 'admin') {
       this.employeeService.getAllEmployeeDetails('?hasApproval=true')
       .subscribe(
         (employees) => {
@@ -89,7 +89,7 @@ export class EmployeePage {
           this.notificationService.showErrorToast('Error in getting employee details.', 2000, 'top');
         }
       );
-    } else if (this.storageEmpPosition == 'company_admin') {
+    } else if (this.storageEmpPosition === 'company_admin') {
       this.employeeService.getEmployeesByCompanyId(secureStorage.getItem('companyId'), '?hasApproval=true').subscribe(
         (employees) => {
           this.employees = this.filterAndProcessEmployeeData(employees, this.storageEmpPosition);
@@ -100,7 +100,7 @@ export class EmployeePage {
           this.notificationService.showErrorToast('Error in getting employee details.', 2000, 'top');
         }
       );
-    } else if (this.storageEmpPosition == 'branch_manager') {
+    } else if (this.storageEmpPosition === 'branch_manager') {
       this.employeeService.getEmployeesByBranchId(secureStorage.getItem('branchId'), '?hasApproval=true').subscribe(
         (employees) => {
           this.employees = this.filterAndProcessEmployeeData(employees, this.storageEmpPosition);
@@ -129,10 +129,10 @@ export class EmployeePage {
   showAlertForConfirmation(confirmationFor: string, index: number): void {
     let alert = this.notificationService.createAlert(
       `${
-        (confirmationFor == 'statusChange') ? 'Confirm status update' : 'Confirm employee deletion'
+        (confirmationFor === 'statusChange') ? 'Confirm status update' : 'Confirm employee deletion'
       }`,
       `${
-        (confirmationFor == 'statusChange') ?
+        (confirmationFor === 'statusChange') ?
         `Update status of employee '${this.employees[index].empName}' from '${
           (this.employees[index].isActive) ? 'active' : 'inactive'
         }' to '${
@@ -148,7 +148,7 @@ export class EmployeePage {
         {
           text: 'YES',
           handler: () => (
-            (confirmationFor == 'statusChange') ? this.changeEmployeeActiveStatus(index) : this.deleteEmployee(index)
+            (confirmationFor === 'statusChange') ? this.changeEmployeeActiveStatus(index) : this.deleteEmployee(index)
           )
         }
       ]
