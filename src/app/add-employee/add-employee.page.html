@@ -1,0 +1,429 @@
+<ion-content>
+
+  <ion-grid class="mt-2">
+    <ion-row>
+      <ion-col size="12">
+        <ion-text color="primary" class="text-left">
+          <h5>
+            <strong>Add Employee</strong>
+          </h5>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="errorMsg">
+      <ion-col size="12">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+    </ion-row>
+
+    <!-- Skeleton view -->
+    <ion-row *ngIf="(!companies && !errorMsg)">
+      <ion-col size-xs="12" size-sm="12" size-md="3" *ngFor="let number of sharedFunctions.generateArray(19)">
+        <ion-row>
+          <ion-col size-xs="6" size-sm="6" size-md="12">
+            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size-xs="6" size-sm="6" size-md="12">
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+
+    <!-- Main view -->
+    <ion-row *ngIf="companies">
+      <form novalidate [formGroup]="addEmployeeForm" class="w-100" (ngSubmit)="profileApprovalAlert()">
+        <ion-row>
+          <ion-col size="12">
+            <small>
+              <strong>Note: </strong>Fields marked with <strong class="text-danger">*</strong> are compulsory.
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="stacked">
+                <strong class="text-danger">*</strong>
+                Company Name
+              </ion-label>
+
+              <ion-select placeholder="Select a company" id="companyId" class="custom-font" formControlName="companyId" (ionChange)="getCompanyIndex()">
+                <ion-select-option *ngFor="let company of companies" value="{{ company._id }}">
+                  {{ company.companyName }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <small *ngIf="formErrors.companyId" class="text-danger">
+              {{ formErrors.companyId }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="stacked">
+                <strong class="text-danger">*</strong>
+                Branch Name
+              </ion-label>
+
+              <ion-select placeholder="Select a branch" id="branchId" class="custom-font" formControlName="branchId">
+                <ion-select-option *ngFor="let branch of companies[companyIndex]?.branches" value="{{ branch._id }}">
+                  {{ branch.branchName }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <small *ngIf="formErrors.branchId" class="text-danger">
+              {{ formErrors.branchId }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="stacked">
+                <strong class="text-danger">*</strong>
+                Position
+              </ion-label>
+
+              <ion-select placeholder="Select a position" id="position" class="custom-font" formControlName="position">
+                <ion-select-option *ngFor="let position of companies[companyIndex]?.positions" value="{{ position }}">
+                  {{ sharedFunctions.formatEmployeePosition(position) }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <small *ngIf="formErrors.position" class="text-danger">
+              {{ formErrors.position }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                Employee ID
+              </ion-label>
+
+              <ion-input id="empId" type="text" class="custom-font" formControlName="empId"></ion-input>
+            </ion-item>
+
+            <small *ngIf="formErrors.empId" class="text-danger">
+              {{ formErrors.empId }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                <strong class="text-danger">*</strong>
+                Employee Name
+              </ion-label>
+
+              <ion-input id="empName" type="text" class="custom-font" formControlName="empName" autocapitalize="on"></ion-input>
+            </ion-item>
+
+            <small *ngIf="formErrors.empName" class="text-danger">
+              {{ formErrors.empName }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                <strong class="text-danger">*</strong>
+                Mobile No.
+              </ion-label>
+
+              <ion-input id="mobileNumber" type="number" inputmode="number" class="custom-font" formControlName="mobileNumber"></ion-input>
+            </ion-item>
+
+            <small *ngIf="formErrors.mobileNumber" class="text-danger">
+              {{ formErrors.mobileNumber }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="stacked">
+                <strong class="text-danger">*</strong>
+                Working Days
+              </ion-label>
+
+              <ion-select placeholder="Select working day(s)" id="workingDays" multiple="true" formControlName="workingDays" class="custom-font">
+                <ion-select-option *ngFor="let day of workingDays" value="{{ day | lowercase }}">
+                  {{ day }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <small *ngIf="formErrors.workingDays" class="text-danger">
+              {{ formErrors.workingDays }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                <strong class="text-danger">*</strong>
+                In Time:
+              </ion-label>
+
+              <ion-datetime pickerFormat="HH:mm a" displayFormat="hh:mm a" formControlName="inTime" class="custom-font" hourValues="6,7,8,9,10,11,12"></ion-datetime>
+            </ion-item>
+
+            <small *ngIf="formErrors.inTime" class="text-danger">
+              {{ formErrors.inTime }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                <strong class="text-danger">*</strong>
+                Out Time:
+              </ion-label>
+
+              <ion-datetime pickerFormat="HH:mm" displayFormat="hh:mm a" formControlName="outTime" class="custom-font" hourValues="13,14,15,16,17,18,19,20,21,22,23"></ion-datetime>
+            </ion-item>
+
+            <small *ngIf="formErrors.outTime" class="text-danger">
+              {{ formErrors.outTime }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="stacked">
+                <strong class="text-danger">*</strong>
+                Punch In from Anywhere
+              </ion-label>
+
+              <ion-toggle style="zoom: 0.60;" mode="ios" color="primary" id="canPunchInOutAnywhere" type="text" class="custom-font" formControlName="canPunchInOutAnywhere" [checked]="(
+                (addEmployeeForm.get('position').value === 'branch_manager') ? true : false
+              )"></ion-toggle>
+            </ion-item>
+
+            <small *ngIf="formErrors.canPunchInOutAnywhere" class="text-danger">
+              {{ formErrors.canPunchInOutAnywhere }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="stacked">
+                <strong class="text-danger">*</strong>
+                Salary Type
+              </ion-label>
+
+              <ion-select placeholder="Select a salary type" id="salaryType" type="text" class="custom-font" formControlName="salaryType">
+                <ion-select-option *ngFor="let type of salaryTypes" value="{{ type | lowercase }}">
+                  {{ type }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <small *ngIf="formErrors.salaryType" class="text-danger">
+              {{ formErrors.salaryType }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                <strong class="text-danger">*</strong>
+                Salary Amount (Rs.)
+              </ion-label>
+
+              <ion-input id="salaryAmount" type="number" inputmode="decimal" class="custom-font" formControlName="salaryAmount"></ion-input>
+            </ion-item>
+
+            <small *ngIf="formErrors.salaryAmount" class="text-danger">
+              {{ formErrors.salaryAmount }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                Date of Joining
+              </ion-label>
+
+              <ion-datetime pickerFormat="MMM DD, YYYY" displayFormat="MMM DD, YYYY" max="{{ maxJoiningDate }}" id="joiningDate" class="custom-font" formControlName="joiningDate"></ion-datetime>
+            </ion-item>
+
+            <small *ngIf="formErrors.joiningDate" class="text-danger">
+              {{ formErrors.joiningDate }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                Email ID
+              </ion-label>
+
+              <ion-input autocapitalize="on" id="emailId" type="email" class="custom-font" formControlName="emailId"></ion-input>
+            </ion-item>
+
+            <small *ngIf="formErrors.emailId" class="text-danger">
+              {{ formErrors.emailId }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                Date of Birth
+              </ion-label>
+
+              <ion-datetime pickerFormat="MMM DD, YYYY" displayFormat="MMM DD, YYYY" min="1970" max="{{ maxDob }}" id="dob" class="custom-font" formControlName="dob"></ion-datetime>
+            </ion-item>
+
+            <small *ngIf="formErrors.dob" class="text-danger">
+              {{ formErrors.dob }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                Address
+              </ion-label>
+
+              <ion-textarea autocapitalize="on" id="address" type="text" class="custom-font" formControlName="address"></ion-textarea>
+            </ion-item>
+
+            <small *ngIf="formErrors.address" class="text-danger">
+              {{ formErrors.address }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                Bank A/C No.
+              </ion-label>
+
+              <ion-input id="bankAccNo" type="number" inputmode="number" class="custom-font" formControlName="bankAccNo"></ion-input>
+            </ion-item>
+
+            <small *ngIf="formErrors.bankAccNo" class="text-danger">
+              {{ formErrors.bankAccNo }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                Bank IFSC
+              </ion-label>
+
+              <ion-input autocapitalize="on" id="bankIfsc" type="text" class="custom-font" formControlName="bankIfsc"></ion-input>
+            </ion-item>
+
+            <small *ngIf="formErrors.bankIfsc" class="text-danger">
+              {{ formErrors.bankIfsc }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                Aadhaar No.
+              </ion-label>
+
+              <ion-input id="aadhaar" type="number" inputmode="number" class="custom-font" formControlName="aadhaar"></ion-input>
+            </ion-item>
+
+            <small *ngIf="formErrors.aadhaar" class="text-danger">
+              {{ formErrors.aadhaar }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                PAN No.
+              </ion-label>
+
+              <ion-input autocapitalize="on" id="pan" type="text" class="custom-font" formControlName="pan"></ion-input>
+            </ion-item>
+
+            <small *ngIf="formErrors.pan" class="text-danger">
+              {{ formErrors.pan }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                <strong class="text-danger">*</strong>
+                Username
+              </ion-label>
+
+              <ion-input id="username" type="text" class="custom-font" formControlName="username"></ion-input>
+            </ion-item>
+
+            <small *ngIf="formErrors.username" class="text-danger">
+              {{ formErrors.username }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="floating">
+                <strong class="text-danger">*</strong>
+                Password
+              </ion-label>
+
+              <ion-input id="password" type="password" class="custom-font" formControlName="password"></ion-input>
+            </ion-item>
+
+            <small *ngIf="formErrors.password" class="text-danger">
+              {{ formErrors.password }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3">
+            <ion-item>
+              <ion-label color="primary" position="stacked">
+                Photo Upload
+              </ion-label>
+
+              <input id="photoImg" type="file" accept="image/jpg,image/jpeg,image/png" class="custom-font" formControlName="photoImg" (change)="onImageSelected($event, 'photoImg')">
+            </ion-item>
+
+            <small *ngIf="formErrors.photoImg" class="text-danger">
+              {{ formErrors.photoImg }}
+            </small>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-button color="primary" mode="ios" expand="block" type="submit" size="medium" strong="true" [disabled]="!addEmployeeForm.valid">
+              <ion-icon slot="start" name="person-add-outline" size="medium"></ion-icon>
+              Add Employee
+            </ion-button>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-button color="primary" mode="ios" expand="block" size="medium" strong="true" (click)="resetForm()">
+              <ion-icon slot="start" name="refresh-outline" size="medium"></ion-icon>
+              Reset Form
+            </ion-button>
+          </ion-col>
+
+        </ion-row>
+      </form>
+
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

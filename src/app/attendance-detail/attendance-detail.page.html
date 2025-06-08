@@ -1,0 +1,260 @@
+<ion-content>
+
+  <ion-grid>
+
+    <ion-row class="d-flex justify-content-end">
+      <ion-button color="danger" mode="ios" fill="clear" size="medium" (click)="dismissModal()">
+        <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="12" class="text-left">
+        <ion-text color="primary">
+          <h5>
+            <strong>
+              <span *ngIf="!isEditMode">
+                Attendance Detail
+              </span>
+
+              <span *ngIf="isEditMode">
+                Edit Attendance
+              </span>
+            </strong>
+          </h5>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12" *ngIf="errorMsg">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+    </ion-row>
+
+    <!-- Skeleton attendance detail view -->
+    <ion-row *ngIf="(
+      (!isEditMode && (!empAttendances || !empBranchDetails)) ||
+      (isEditMode && !empAttendances)
+    )">
+      <ion-col size="12" class="d-flex justify-content-center">
+        <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-skeleton-text animated style="width: 100%;"></ion-skeleton-text>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="6">
+        <ion-row>
+          <ion-col size="6" class="d-flex justify-content-start">
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-end">
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-start">
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-end">
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="12" class="d-flex justify-content-start">
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+            <br>
+
+            <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+
+    <!-- Main attendance detail view for employees -->
+    <ion-row *ngIf="(!isEditMode && empAttendances && empBranchDetails)" class="pl-1 pr-1">
+
+      <ion-col size="12" class="text-center">
+        <ion-text>
+          {{ empAttendances[0].inTime | date: 'MMM d, y' }}
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12" *ngIf="empAttendances[0]['punchOutImg']">
+        <ion-img src="{{ empAttendances[0]['punchOutImg'] }}"></ion-img>
+      </ion-col>
+
+      <ion-col size="6" class="text-left">
+        <ion-text color="primary">
+          <strong>You Punched In at:</strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="6" class="text-right">
+        <ion-text>
+          <strong>
+
+            <span *ngIf="(empAttendances[0].status === 'on-time' || empAttendances[0].status === 'late')">
+              {{ empAttendances[0].inTime | date: 'hh:mm a' }}
+            </span>
+            <span *ngIf="(empAttendances[0].status != 'on-time' && empAttendances[0].status != 'late')">
+              NA
+            </span>
+
+          </strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="6" class="text-left">
+        <ion-text color="primary">
+          <strong>You Punched Out at:</strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="6" class="text-right">
+        <ion-text>
+          <strong>
+
+            <span *ngIf="(empAttendances[0].status === 'on-time' || empAttendances[0].status === 'late')">
+              {{ empAttendances[0].outTime | date: 'hh:mm a' }}
+            </span>
+            <span *ngIf="(empAttendances[0].status != 'on-time' && empAttendances[0].status != 'late')">
+              NA
+            </span>
+
+          </strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12" class="text-left">
+        <ion-text>
+          <strong>Your login location:</strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-text>
+          {{ empBranchDetails?.branchName }}
+          <br>
+          {{ empBranchDetails?.branchAddress }}
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12" class="text-center">
+        <ion-text color="{{
+          (empAttendances[0].status === 'on-time') ? 'success' : (
+            (empAttendances[0].status === 'late') ? 'warning' : (
+              (empAttendances[0].status === 'absent') ? 'danger' : (
+                (empAttendances[0].status === 'holiday') ? 'tertiary' : 'primary'
+              )
+            )
+          )
+        }}">
+          <strong>
+            <span *ngIf="(empAttendances[0].status != 'holiday' && empAttendances[0].status != 'paid_leave' && empAttendances[0].status != 'unpaid_leave')">
+              {{ empAttendances[0].status | uppercase }}
+            </span>
+
+            <span *ngIf="(empAttendances[0].status === 'holiday' || empAttendances[0].status === 'paid_leave' || empAttendances[0].status === 'unpaid_leave')">
+              ON {{ empAttendances[0].status  | uppercase }}
+            </span>
+          </strong>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+
+    <!-- Main view for editing attendance details -->
+    <ion-row *ngIf="(isEditMode && (storageEmpPosition != 'employee') && empAttendances && currentRecord)" class="pl-1 pr-1">
+
+      <ion-col size="12">
+        <ion-row class="d-flex align-items-center">
+          <ion-col size="3" class="d-flex justify-content-start">
+            <ion-button mode="ios" color="dark" fill="clear" size="large" strong="true" (click)="changeReportDate('backward')" [disabled]="(empAttendances.length <= 1)" *ngIf="!isEditMode">
+              <ion-icon slot="icon-only" name="chevron-back-circle-outline" size="large" color="primary"></ion-icon>
+            </ion-button>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-center">
+            <ion-text *ngIf="currentRecord">
+              {{ currentRecord.inTime | date: 'MMM d, y' }}
+            </ion-text>
+            <ion-text *ngIf="!currentRecord">
+              - -
+            </ion-text>
+          </ion-col>
+
+          <ion-col size="3" class="d-flex justify-content-end">
+            <ion-button mode="ios" color="dark" fill="clear" size="large" strong="true" (click)="changeReportDate('forward')" [disabled]="(empAttendances.length <= 1)" *ngIf="!isEditMode">
+              <ion-icon slot="icon-only" name="chevron-forward-circle-outline" size="large" color="primary"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-text>
+          <strong>
+            Employee
+          </strong>
+          : {{ (currentRecord) ? currentRecord?.empId['empName'] : 'NA' }}
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-item *ngIf="(currentRecord.status != 'holiday')">
+          <ion-label position="floating" color="primary">
+            Change status
+          </ion-label>
+
+          <ion-select [(ngModel)]="currentStatus">
+            <ion-select-option *ngFor="let status of attendanceStatuses" [value]="status">
+              <ion-text [color]="(
+                (currentRecord.status === 'on-time') ? 'success' : (
+                  (currentRecord.status === 'late' || currentRecord.status === 'holiday') ? 'tertiary' : (
+                    (currentRecord.status === 'absent') ? 'danger' : 'primary'
+                  )
+                )
+              )">
+                <strong>
+                  {{ status | titlecase }}
+                </strong>
+              </ion-text>
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-text class="text-center" color="tertiary" *ngIf="(currentRecord.status === 'holiday')">
+          <strong>{{ currentRecord.status | titlecase }}</strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12" *ngIf="currentRecord['punchOutImg']" class="mb-5">
+        <ion-img [src]="currentRecord['punchOutImg']"></ion-img>
+      </ion-col>
+
+      <ion-col size="12" class="fixed-bottom">
+        <ion-button strong="true" color="primary" mode="ios" expand="block" size="medium" [disabled]="(storageEmpPosition === 'branch_manager')" (click)="statusUpdateConfirmation()">
+          <ion-icon slot="start" name="pencil-outline" size="medium"></ion-icon>
+          Update
+        </ion-button>
+      </ion-col>
+
+    </ion-row>
+
+  </ion-grid>
+</ion-content>

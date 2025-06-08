@@ -1,0 +1,74 @@
+<ion-content>
+
+  <ion-grid class="ion-justify-content-center mt-2">
+    <form novalidate [formGroup]="loginForm" (ngSubmit)="logIn()">
+      <ion-row padding>
+
+        <ion-col size="12" class="d-flex justify-content-center mx-auto">
+          <ion-text color="primary" class="text-center">
+            <h5>
+              <strong>Login</strong>
+            </h5>
+          </ion-text>
+        </ion-col>
+
+        <ion-col size="12" class="ion-justify-content-center">
+
+          <ion-item>
+            <ion-icon slot="start" name="person-outline"></ion-icon>
+            <ion-input type="text" class="form-control border border-light border-2" placeholder="Username" formControlName="username"></ion-input>
+          </ion-item>
+
+          <span class="text-danger" *ngIf="formErrors.username">
+            {{ formErrors.username }}
+          </span>
+        </ion-col>
+
+        <ion-col size="12">
+          
+          <ion-item>
+            <ion-icon slot="start" name="keypad-outline"></ion-icon>
+            <ion-input type="password" class="form-control border border-light border-2" placeholder="Password" formControlName="password"></ion-input>
+          </ion-item>
+
+          <span class="text-danger" *ngIf="formErrors.password">
+            {{ formErrors.password }}
+          </span>
+        </ion-col>
+
+        <ion-col size="12" *ngIf="errorMsg">
+          <p class="text-center text-danger" *ngIf="!errorMsg.status">
+            <ion-icon name="alert-circle" color="danger"></ion-icon>
+            Error {{ errorMsg }}
+          </p>
+          <p class="text-center text-danger" *ngIf="errorMsg.status">
+            <ion-icon name="alert-circle" color="danger"></ion-icon>
+            Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+          </p>
+        </ion-col>
+
+        <ion-col size="12" class="fixed-bottom">
+          <ion-row>
+            <ion-col size="6">
+              <ion-button mode="ios" size="medium" color="primary" [disabled]="!loginForm.valid" type="submit" expand="block" strong="true">
+                <ion-icon slot="start" name="log-in-outline" size="medium"></ion-icon>
+                Login
+              </ion-button>
+            </ion-col>
+
+            <ion-col size="6">
+              <ion-button mode="ios" size="medium" color="primary" type="button" expand="block" strong="true" routerLink="/register">
+                <ion-icon slot="start" name="person-add-outline" size="medium"></ion-icon>
+                Register
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+
+      </ion-row>
+    
+    </form>
+
+  </ion-grid>
+
+</ion-content>

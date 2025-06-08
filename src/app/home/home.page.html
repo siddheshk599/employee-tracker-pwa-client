@@ -1,0 +1,368 @@
+<ion-content>
+
+  <ion-grid class="mt-2">
+
+    <ion-row *ngIf="errorMsg">
+      <ion-col size="12">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+    </ion-row>
+
+    <!-- Skeleton view for employee data -->
+    <ion-row *ngIf="(!employee && !errorMsg)">
+
+      <ion-col size-xs="12" size-sm="12" size-md="6">
+        <div class="embed-responsive embed-responsive-4by3">
+          <ion-skeleton-text animated style="width: 100%;" class="embed-responsive-item"></ion-skeleton-text>
+        </div>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+            <br>
+
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-end">
+            <ion-skeleton-text animated style="width: 40%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-end">
+            <ion-skeleton-text animated style="width: 40%;"></ion-skeleton-text>
+          </ion-col>
+
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="6">
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+          </ion-col>
+
+        </ion-row>
+      </ion-col>
+
+    </ion-row>
+
+    <!-- Main view with employee data -->
+    <ion-row *ngIf="(!errorMsg && employee && employee?.position === 'branch_manager')">
+      <ion-segment [(ngModel)]="segmentButton" swipeGesture="true" (ionChange)="segmentChange($event)">
+        <ion-segment-button value="yourJob">
+          Your Job
+        </ion-segment-button>
+
+        <ion-segment-button value="employeeJob">
+          Employees' Job
+        </ion-segment-button>
+      </ion-segment>
+    </ion-row>
+
+    <ion-row [hidden]="!(
+        employee &&
+        canPunchInOut &&
+        (
+          (
+            employee?.position != 'admin' &&
+            employee?.position != 'company_admin' &&
+            employee?.position != 'branch_manager'
+          ) ||
+          (
+            employee?.position === 'branch_manager' &&
+            segmentButton === 'yourJob'
+          )
+        )
+      )">
+
+      <ion-col size="12" *ngIf="employeeAttendanceByBranchManager">
+        <ion-button expand="block" fill="outline" size="medium" color="primary" mode="ios" strong="true" (click)="ionViewWillEnter()">
+          <ion-icon slot="start"  size="large" name="chevron-back-outline"></ion-icon>
+          Go back
+        </ion-button>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="6">
+        <ion-text *ngIf="employeeAttendanceByBranchManager" color="primary" class="text-left">
+          <h6>
+            <strong>Job details of {{ employee.empName }}:</strong>
+          </h6>
+        </ion-text>
+
+        <div class="embed-responsive embed-responsive-4by3">
+          <iframe class="embed-responsive-item" [src]="googleMapsURL"></iframe>
+        </div>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="6" *ngIf="employee">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text>
+              <strong>Your login location:</strong>
+            </ion-text>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-text>
+              {{ employee.branchId['branchName'] }}
+              <br>
+              {{ employee.branchId['branchAddress'] }}
+            </ion-text>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-text>
+              <strong>
+                {{ ((employee.activeAttendanceId) ? 'You Punched In At' : 'Your Punch In Time') }}
+              </strong>
+            </ion-text>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-end">
+            <ion-text *ngIf="employee.activeAttendanceId">
+              {{ employee.activeAttendanceId['inTime'] | date: 'MMM d, y, hh:mm a' }}
+            </ion-text>
+
+            <ion-text *ngIf="!employee.activeAttendanceId">
+              {{ employee.inTime | date: 'hh:mm a' }}
+            </ion-text>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-text>
+              <strong>Your Punch Out Time</strong>
+            </ion-text>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-end" *ngIf="employee.outTime">
+            <ion-text>
+              {{ employee.outTime | date: 'hh:mm a' }}
+            </ion-text>
+          </ion-col>
+
+        </ion-row>
+
+        <ion-row>
+          <!-- <ion-col size="12" class="d-flex justify-content-center" *ngIf="(this.employee.activeAttendanceId &&
+          this.employee.activeAttendanceId['overtimeHours'])">
+            <ion-text color="tertiary" class="text-center">
+              <strong>You are requested to do Overtime for {{ this.employee.activeAttendanceId['overtimeHours'] }} hours.</strong>
+            </ion-text>
+          </ion-col> -->
+
+          <ion-col size="6">
+            <ion-button mode="ios" size="medium" expand="block" fill="solid" (click)="navigateTo('/tabs/mark-attendance', employee)" color="primary"  strong="true">
+              <ion-icon slot="start" [name]="(
+                (!employee.activeAttendanceId) ?
+                'log-in-outline' : 'log-out-outline'
+              )" size="medium"></ion-icon>
+
+              {{ (
+                (!employee.activeAttendanceId) ?
+                'Punch In' : 'Punch Out'
+              ) }}
+            </ion-button>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-button mode="ios" size="medium" expand="block" fill="solid" (click)="navigateTo('/tabs/leave', employee)" color="primary"  strong="true">
+              <ion-icon slot="start" name="calendar-outline" size="medium"></ion-icon>
+              Ask for leave
+            </ion-button>
+          </ion-col>
+
+        </ion-row>
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row *ngIf="(employee && employee?.position === 'branch_manager' && segmentButton === 'employeeJob')">
+      <ion-col size="12">
+
+        <ion-list class="custom-font">
+          <ion-list-header class="custom-font">
+            <ion-text color="primary">
+              <h6 class="text-left custom-font">
+                <strong>
+                  Employee(s) of {{ employee.branchId['branchName'] }}:
+                </strong>
+              </h6>
+            </ion-text>
+          </ion-list-header>
+
+          <!-- Skeleton view -->
+          <span *ngIf="(!employees && !errorMsg)">
+            <ion-row *ngFor="let number of sharedFunctions.generateArray(3)">
+              <ion-col size="12">
+                <ion-item lines="none">
+                  <ion-avatar slot="start">
+                    <ion-skeleton-text animated></ion-skeleton-text>
+                  </ion-avatar>
+
+                  <ion-label class="custom-font">
+                    <ion-skeleton-text animated style="width: 30%;"></ion-skeleton-text>
+                    <ion-skeleton-text animated style="width: 20%;"></ion-skeleton-text>
+                    <ion-skeleton-text animated style="width: 10%;"></ion-skeleton-text>
+                  </ion-label>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </span>
+
+          <!-- Main view with data of employees -->
+          <span *ngIf="(employees && employees.length > 0)">
+            <ion-item button class="custom-font" *ngFor="let employee of employees; let idx = index" (click)="openEmployeeJob(idx)">
+              <ion-avatar slot="start">
+                <img src="{{ employee.photoImg }}" alt="Pic">
+              </ion-avatar>
+              <ion-label>
+                <h5 class="custom-font">
+                  {{ employee.empName }}
+                </h5>
+                <p class="custom-font">
+                  Position:
+                  <strong>
+                    {{ sharedFunctions.formatEmployeePosition(employee?.position) }}
+                  </strong>
+                </p>
+                <p class="custom-font">
+                  Working Hours:
+                  <strong>
+                    {{ employee.inTime | date: 'hh:mm a' }} to {{ employee.outTime | date: 'hh:mm a' }}
+                  </strong>
+                </p>
+              </ion-label>
+            </ion-item>
+          </span>
+
+          <span *ngIf="(employees && employees.length === 0)">
+            <ion-item lines="none" class="d-flex justify-content-center">
+              <ion-text color="danger" class="text-center">
+                <h6>
+                  <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+                  <br>
+                  <strong>
+                    No attendance to be marked for your branch's employee due to either of the following reasons:
+                  </strong>
+
+                  <br><br>
+                  All your branch's employees have today as a non-working day,
+                  <br><br>
+                  Today's attendance of all of your branch's employees have already been marked.
+                </h6>
+              </ion-text>
+            </ion-item>
+          </span>
+
+        </ion-list>
+
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="(
+      employee &&
+      !canPunchInOut &&
+      (
+        (
+          employee?.position != 'admin' &&
+          employee?.position != 'company_admin' &&
+          employee?.position != 'branch_manager'
+        ) ||
+        (
+          employee?.position === 'branch_manager' &&
+          segmentButton === 'yourJob'
+        )
+      )
+    )">
+      <ion-col size="12">
+        <ion-text class="text-center" color="danger">
+          <h6>
+            <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+            <br>
+            <strong>
+              No attendance to be marked due to either of the following reasons:
+            </strong>
+
+            <br><br>
+            Today is your non-working day,
+            <br><br>
+            You've already marked today's attendance,
+            <br><br>
+            You're trying to mark your attendance even before 30 minutes of your assigned punch-in time.
+            <br>
+
+          </h6>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12" class="d-flex justify-content-center" *ngIf="canApplyForLeave">
+        <ion-button strong="true" mode="ios" color="primary" size="medium" (click)="navigateTo('/tabs/leave', employee)">
+          <ion-icon name="calendar-outline" size="medium" slot="start"></ion-icon>
+          Apply for leave
+        </ion-button>
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row *ngIf="(employee && analytics && ((employee?.position === 'admin') || (employee?.position === 'company_admin')))">
+
+      <ion-col size="12" class="text-center">
+        <ion-text color="primary">
+          <h5>
+            <strong>
+              Summary
+              <span *ngIf="(employee?.position === 'company_admin')">
+                of your company
+              </span>
+            </strong>
+
+          </h5>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size-xs="6" size-sm="6" size-md="4" *ngFor="let item of analytics | keyvalue">
+        <ion-img class="img-fluid" src="assets/images/{{ item.key }}.svg" style="display: block; margin: auto; width: 100px; height: 100px;" alt="Pic_{{ item.key }}"></ion-img>
+
+        <h6 class="text-center"t>
+          <ion-text color="primary">
+            <strong>
+              {{ item.value['text'] }}
+            </strong>
+          </ion-text>
+        </h6>
+
+        <h5 class="text-center">
+          <strong>
+            {{ item.value['value'] }}
+          </strong>
+        </h5>
+      </ion-col>
+
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>

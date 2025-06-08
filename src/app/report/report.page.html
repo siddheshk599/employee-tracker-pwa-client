@@ -1,0 +1,317 @@
+<ion-content>
+
+  <ion-grid class="mt-2">
+
+    <ion-row>
+      <ion-col size="7" class="d-flex align-items-center">
+        <ion-text color="primary" class="text-left">
+          <h5>
+            <strong>
+              Report
+              <span *ngIf="(employee && (storageEmpPosition != 'employee'))">
+                 of {{ employee.empName }}
+              </span>
+            </strong>
+          </h5>
+        </ion-text>
+      </ion-col>
+
+      <!-- Skeleton view -->
+      <ion-col size="5" *ngIf="(!empIdAttendancesForMonth && !errorMsg)">
+        <ion-row class="d-flex align-items-center">
+          <ion-col size="3" class="d-flex justify-content-end">
+            <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="4" class="d-flex justify-content-center">
+            <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="3" class="d-flex justify-content-start">
+            <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <!-- Main view toggle when report data is present -->
+      <ion-col size="5" *ngIf="(empIdAttendancesForMonth && (empIdAttendancesForMonth.length > 0))">
+        <ion-row class="d-flex align-items-center">
+          <ion-col size="3" class="d-flex justify-content-end" (click)="calendarViewToggle = false">
+            <ion-icon color="primary" size="small" name="list-outline"></ion-icon>
+          </ion-col>
+
+          <ion-col size="4" class="d-flex justify-content-center">
+            <ion-toggle style="zoom: 0.45;" mode="ios" color="primary" [(ngModel)]="calendarViewToggle" (ionChange)="changeView()"></ion-toggle>
+          </ion-col>
+
+          <ion-col size="3" class="d-flex justify-content-start" (click)="calendarViewToggle = true">
+            <ion-icon color="primary" size="small" name="calendar-outline"></ion-icon>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <ion-col size="12" *ngIf="errorMsg">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+    </ion-row>
+
+    <!-- Skeleton view -->
+    <ion-row *ngIf="(!empIdAttendancesForMonth && !errorMsg)">
+
+      <ion-col size="12">
+        <ion-row class="d-flex align-items-center">
+          <ion-col size="3" class="d-flex justify-content-start">
+            <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-center">
+            <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="3" class="d-flex justify-content-end">
+            <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <ion-col size="12">
+
+        <table class="table table-striped table-hover">
+
+          <thead>
+            <tr>
+              <th scope="col" *ngFor="let number of sharedFunctions.generateArray(6)">
+                <ion-skeleton-text animated style="width: 65%;"></ion-skeleton-text>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let number of sharedFunctions.generateArray(3)">
+              <td *ngFor="let number of sharedFunctions.generateArray(6)">
+                <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+
+      </ion-col>
+
+    </ion-row>
+
+    <!-- Main view with employee's attendance data -->
+    <ion-row *ngIf="empIdAttendancesForMonth">
+
+      <ion-col size="12">
+        <ion-row class="d-flex align-items-center">
+          <ion-col size="3" class="d-flex justify-content-start">
+            <ion-button mode="ios" color="primary" fill="clear" size="large" strong="true" (click)="changeReportMonth('backward')" [hidden]="(attendanceMonths.length <= 1)">
+              <ion-icon slot="icon-only" name="chevron-back-circle-outline" size="large"></ion-icon>
+            </ion-button>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-center">
+            <ion-select placeholder="Select a month" id="selectedAttendanceMonth" type="text" class="custom-font" [(ngModel)]="selectedAttendanceMonth" (ionChange)="changeReportMonth('selectOption')">
+              <ion-select-option *ngFor="let elem of attendanceMonths" value="{{ elem.monthAndYear }}">
+                {{ elem.monthAndYear }}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+
+          <ion-col size="3" class="d-flex justify-content-end">
+            <ion-button mode="ios" color="primary" fill="clear" size="large" strong="true" (click)="changeReportMonth('forward')" [hidden]="(attendanceMonths.length <= 1)">
+              <ion-icon slot="icon-only" name="chevron-forward-circle-outline" size="large"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <!-- List view of report -->
+      <ion-col size="12" *ngIf="!calendarViewToggle">
+
+        <table class="table table-striped table-hover table-responsive-sm">
+          <thead>
+            <tr class="custom-primary-bg">
+
+              <th scope="col" class="text-center pt-0 pb-0">
+                <ion-text color="light">
+                  <small>
+                    <strong>#</strong>
+                  </small>
+                </ion-text>
+              </th>
+
+              <th scope="col" class="text-center pt-0 pb-0">
+                <ion-text color="light">
+                  <small>
+                    <strong>Punch-in</strong>
+                  </small>
+                </ion-text>
+              </th>
+
+              <th scope="col" class="text-center pt-0 pb-0">
+                <ion-text color="light">
+                  <small>
+                    <strong>Punch-out</strong>
+                  </small>
+                </ion-text>
+              </th>
+
+              <th scope="col" class="text-center pt-0 pb-0">
+                <ion-text color="light">
+                  <small>
+                    <strong>W. Hrs.</strong>
+                  </small>
+                </ion-text>
+              </th>
+
+              <th scope="col" class="text-center pt-0 pb-0">
+                <ion-text color="light">
+                  <small>
+                    <strong>Status</strong>
+                  </small>
+                </ion-text>
+              </th>
+
+              <th scope="col" class="text-center pt-0 pb-0">
+                <ion-text color="light">
+                  <small>
+                    <strong>Action</strong>
+                  </small>
+                </ion-text>
+              </th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr *ngIf="(empIdAttendancesForMonth.length === 0)" class="pt-0 pb-0">
+              <td colspan="6" class="text-center pt-0 pb-0">
+                <ion-text color="danger">
+                  <h6>
+                    <ion-icon name="alert-circle" size="large"></ion-icon>
+                    No attendance record(s) to generate a report.
+                  </h6>
+                </ion-text>
+              </td>
+            </tr>
+
+            <tr *ngFor="let attendance of empIdAttendancesForMonth" class="pt-0 pb-0">
+              <td class="text-center p-0" data-header="#">
+                <ion-text>
+                  <small>
+                    {{ getDateAsSerialNumber(attendance.inTime) }}
+                  </small>
+                </ion-text>
+              </td>
+
+              <td class="text-center p-0" data-header="Punch-in">
+                <ion-text *ngIf="(attendance.status === 'on-time' || attendance.status === 'late')">
+                  <small>
+                    {{ attendance['inTime'] | date: 'hh:mm a' }}
+                  </small>
+                </ion-text>
+
+                <ion-text *ngIf="(attendance.status != 'on-time' && attendance.status != 'late')">
+                  <small>NA</small>
+                </ion-text>
+              </td>
+
+              <td class="text-center p-0" data-header="Punch-out">
+                <ion-text *ngIf="(attendance.status === 'on-time' || attendance.status === 'late')">
+                  <small>
+                    {{ attendance['outTime'] | date: 'hh:mm a' }}
+                  </small>
+                </ion-text>
+
+                <ion-text *ngIf="(attendance.status != 'on-time' && attendance.status != 'late')">
+                  <small>NA</small>
+                </ion-text>
+              </td>
+
+              <td class="text-center p-0" data-header="W. Hrs.">
+                <ion-text *ngIf="(attendance.status === 'on-time' || attendance.status === 'late')">
+                  <small>
+                    {{ getWorkHrs(attendance.outTime, attendance.inTime) }}
+                  </small>
+                </ion-text>
+
+                <ion-text *ngIf="(attendance.status != 'on-time' && attendance.status != 'late')">
+                  <small>NA</small>
+                </ion-text>
+              </td>
+
+              <td class="text-center p-0" data-header="Status">
+                <ion-text [color]="(attendance.status === 'on-time') ? 'success' : (
+                  (attendance.status === 'late' || attendance.status === 'holiday') ? 'tertiary' : (
+                    (attendance.status === 'absent') ? 'danger' : 'primary'
+                  )
+                )">
+                  <small>
+                    {{ attendance.status | titlecase }}
+                  </small>
+                </ion-text>
+              </td>
+
+              <td class="p-0" data-header="Action">
+                <ion-row>
+                  <ion-col size="3">
+                    <ion-button mode="ios" color="dark" fill="clear" size="small" (click)="viewAttendance(attendance)">
+                      <ion-icon slot="icon-only" name="document-text-outline" size="small"></ion-icon>
+                    </ion-button>
+                  </ion-col>
+
+                  <ion-col size="3" offset="1">
+                    <ion-button mode="ios" color="dark" fill="clear" size="small" (click)="viewLocationHistory(attendance)" [disabled]="(attendance.status != 'on-time' && attendance.status != 'late')">
+                      <ion-icon slot="icon-only" name="map-outline" size="small"></ion-icon>
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+
+      </ion-col>
+
+      <!-- Calendar view of report -->
+      <ion-col size="12" *ngIf="calendarViewToggle">
+        <ion-row>
+
+          <ion-col size="1.71429" *ngFor="let day of weekDays" class="border border-1 border-secondary text-center">
+            <ion-text class="text-center">
+              {{ day.slice(0, 3) }}
+            </ion-text>
+          </ion-col>
+
+          <!-- Offset columns -->
+          <ion-col size="1.71429" *ngFor="let day of sharedFunctions.generateArray(offsetColCount)"></ion-col>
+
+          <ion-col size="1.71429" *ngFor="let attendance of empIdAttendancesForMonth" class="border border-1 border-light text-center" [style]="getBgStyling(attendance.status)" (click)="viewAttendance(attendance)">
+            <ion-text class="text-center" color="light">
+              <small>
+                {{ getDateAsSerialNumber(attendance.inTime) }}
+                <br>
+                {{ attendance.status | titlecase }}
+              </small>
+            </ion-text>
+          </ion-col>
+
+        </ion-row>
+      </ion-col>
+
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>

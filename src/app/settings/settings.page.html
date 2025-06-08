@@ -1,0 +1,919 @@
+<ion-content>
+
+  <ion-grid class="mt-2">
+
+    <ion-row>
+      <ion-col size="12" *ngIf="errorMsg">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="4" *ngIf="(storageEmpPosition === 'admin' || storageEmpPosition === 'company_admin')">
+        <ion-button strong="true" mode="ios" fill="outline" expand="block" routerLink="/tabs/manage-company-details" size="medium">
+          <ion-icon slot="start" size="medium" name="business-outline"></ion-icon>
+          Manage Company Details
+        </ion-button>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="4" *ngIf="(storageEmpPosition != 'admin')">
+        <ion-button strong="true" mode="ios" fill="outline" expand="block" (click)="deleteAccount()" size="medium">
+          <ion-icon slot="start" size="medium" name="close-circle-outline"></ion-icon>
+          Delete your account
+        </ion-button>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="4">
+        <ion-button strong="true" mode="ios" fill="outline" expand="block" (click)="logOut()" size="medium">
+          <ion-icon slot="start" size="medium" name="exit-outline"></ion-icon>
+          Logout
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="12">
+        <ion-segment mode="md" color="primary" [(ngModel)]="mainSegmentButton" swipeGesture="true" (ionChange)="segmentChange($event)">
+          <ion-segment-button value="approvals" *ngIf="(storageEmpPosition === 'admin' || storageEmpPosition === 'company_admin' || storageEmpPosition === 'branch_manager')">
+            <small>Approvals</small>
+          </ion-segment-button>
+
+          <ion-segment-button value="salary" *ngIf="(storageEmpPosition === 'employee' || storageEmpPosition === 'branch_manager')">
+            <small>Salary</small>
+          </ion-segment-button>
+
+          <ion-segment-button value="profile">
+            <small>Profile</small>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="(mainSegmentButton === 'salary')">
+
+      <!-- Skeleton view -->
+      <ion-col size="12" *ngIf="(!empSalaryDetails && !errorMsg)">
+        <ion-row>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" *ngFor="let number of sharedFunctions.generateArray(3)">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12">
+                <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12">
+                <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+        </ion-row>
+      </ion-col>
+
+      <!-- Main view with salary data -->
+      <ion-col size="12" *ngIf="empSalaryDetails">
+        <ion-row>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>
+                  <strong>
+                    Your Working
+                    <span *ngIf="(employee.salaryType === 'daily' || employee.salaryType === 'weekly')">
+                      Day(s)
+                    </span>
+
+                    <span *ngIf="(employee.salaryType === 'hourly')">
+                      Hour(s)
+                    </span>
+                  </strong>
+                </small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>
+                  {{ empSalaryDetails.workingCount | number: '1.2-2' }}
+                </small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>
+                  <strong>
+                    Your Paid Leaves (in
+                    <span *ngIf="(employee.salaryType === 'daily' || employee.salaryType === 'weekly')">
+                      Day(s))
+                    </span>
+
+                    <span *ngIf="(employee.salaryType === 'hourly')">
+                      Hour(s))
+                    </span>
+                  </strong>
+                </small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>
+                  {{ empSalaryDetails.paidLeavesCount | number: '1.2-2' }}
+                </small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <ion-text color="primary">
+                  <small><strong>Your Total Salary is</strong></small>
+                </ion-text>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>
+                  &#8377; {{ empSalaryDetails.totalSalary | number: '1.2-2' }}
+                </small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Advance Taken</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>
+                  &#8377; {{ empSalaryDetails.advanceTaken | number: '1.2-2' }}
+                </small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <ion-text color="primary">
+                  <small><strong>Your Net Salary is</strong></small>
+                </ion-text>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>
+                  &#8377; {{ empSalaryDetails.netSalary | number: '1.2-2' }}
+                </small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+        </ion-row>
+      </ion-col>
+
+      <ion-col size="12">
+        <hr class="border border-dark">
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="primary" class="text-left">
+              <h6>
+                <strong>Ask for Salary Advance</strong>
+              </h6>
+            </ion-text>
+          </ion-col>
+
+          <ion-col size="12">
+            <form class="w-100" novalidate [formGroup]="salaryAdvanceRequestForm">
+              <ion-row>
+                <ion-col size-xs="12" size-sm="12" size-md="6">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      Advance Amount (&#8377;)
+                    </ion-label>
+
+                    <ion-input id="advanceAmount" type="number" class="custom-font" formControlName="advanceAmount"></ion-input>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.advanceAmount" class="text-danger">
+                    {{ formErrors.advanceAmount }}
+                  </small>
+                </ion-col>
+
+                <ion-col size-xs="12" size-sm="12" size-md="6">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      Date
+                    </ion-label>
+
+                    <ion-datetime pickerFormat="MMM DD, YYYY" displayFormat="MMM DD, YYYY" min="{{ minAdvanceDate }}" id="advanceDate" class="custom-font" formControlName="advanceDate"></ion-datetime>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.advanceDate" class="text-danger">
+                    {{ formErrors.advanceDate }}
+                  </small>
+                </ion-col>
+
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      Reason
+                    </ion-label>
+
+                    <ion-textarea autocapitalize="on" id="reason" type="text" class="custom-font" formControlName="reason"></ion-textarea>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.reason" class="text-danger">
+                    {{ formErrors.reason }}
+                  </small>
+                </ion-col>
+              </ion-row>
+
+            </form>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-button mode="ios" size="medium" color="primary" strong="true" expand="block" fill="solid" type="submit" [disabled]="!salaryAdvanceRequestForm.valid" (click)="addSalaryAdvanceRequest()">
+              <ion-icon slot="start" name="help-circle-outline" size="medium" color="light"></ion-icon>
+                Advance Request
+            </ion-button>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-button mode="ios" color="primary" strong="true" expand="block" fill="solid" type="button" (click)="generateSalarySlip(empSalaryDetails)">
+              <ion-icon slot="start" name="cash-outline" size="medium" color="light"></ion-icon>
+                Current Salary Slip
+            </ion-button>
+          </ion-col>
+
+          <ion-col size="6">
+            <ion-button mode="ios" color="primary" strong="true" expand="block" fill="solid" type="button" (click)="generateStatement()">
+              <ion-icon slot="start" name="document-outline" size="medium" color="light"></ion-icon>
+                Statement
+            </ion-button>
+          </ion-col>
+
+        </ion-row>
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row *ngIf="(mainSegmentButton === 'approvals')">
+      <ion-col size="12">
+        <ion-segment mode="md" color="primary" [(ngModel)]="approvalSegmentButton" swipeGesture="true" (ionChange)="segmentChange($event)">
+          <ion-segment-button value="employeeApproval" *ngIf="(storageEmpPosition === 'admin' || storageEmpPosition === 'company_admin')">
+            <small>Employees</small>
+          </ion-segment-button>
+
+          <ion-segment-button value="leaveApproval">
+            <small>Leaves</small>
+          </ion-segment-button>
+
+          <ion-segment-button value="salaryAdvanceApproval">
+            <small>Salary Advances</small>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="(mainSegmentButton === 'approvals')">
+      <ion-col size="12" *ngIf="(approvalSegmentButton === 'employeeApproval')">
+        <ion-list>
+          <ion-list-header>
+            <h6>
+              <ion-text color="primary">
+                Pending Employee Profile Approvals:
+              </ion-text>
+            </h6>
+          </ion-list-header>
+
+          <!-- Skeleton view -->
+          <span *ngIf="(!unApprovedEmployees && !errorMsg)">
+            <ion-row *ngFor="let number of sharedFunctions.generateArray(3)">
+              <ion-col size="12">
+                <ion-item lines="none">
+                  <ion-avatar slot="start">
+                    <ion-skeleton-text animated></ion-skeleton-text>
+                  </ion-avatar>
+
+                  <ion-label class="custom-font">
+                    <ion-skeleton-text animated style="width: 30%;"></ion-skeleton-text>
+                    <ion-skeleton-text animated style="width: 20%;"></ion-skeleton-text>
+                    <ion-skeleton-text animated style="width: 10%;"></ion-skeleton-text>
+                  </ion-label>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </span>
+
+          <!-- Main view with data of unapproved employees -->
+          <span *ngIf="(unApprovedEmployees && unApprovedEmployees.length > 0)">
+            <ion-row *ngFor="let employee of unApprovedEmployees; let idx = index">
+
+              <ion-col size-xs="12" size-sm="12" size-md="9">
+                <ion-item lines="none">
+                  <ion-avatar slot="start">
+                    <ion-img *ngIf="employee.photoImg" src="{{ employee.photoImg }}" alt="Pic"></ion-img>
+
+                    <ion-icon *ngIf="!employee.photoImg" size="large" color="medium" name="person-circle-outline"></ion-icon>
+                  </ion-avatar>
+
+                  <ion-label class="custom-font">
+                    <h5>
+                      {{ employee.empName }}
+                    </h5>
+                    <p *ngIf="(storageEmpPosition === 'admin')">
+                      Company Name:
+                      <strong>
+                        {{ employee.companyId['companyName'] }}
+                      </strong>
+                    </p>
+                    <p *ngIf="(storageEmpPosition === 'admin' || storageEmpPosition === 'company_admin')">
+                      Branch Name:
+                      <strong>
+                        {{ employee.branchId['branchName'] }}
+                      </strong>
+                    </p>
+                    <p>
+                      Position:
+                      <strong>
+                        {{ sharedFunctions.formatEmployeePosition(employee.position) }}
+                      </strong>
+                    </p>
+                  </ion-label>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size-xs="12" size-sm="12" size-md="3" class="d-flex justify-content-center">
+                <ion-button strong="true" size="medium" shape="round" mode="ios" fill="solid" color="primary" (click)="sendEmployeeProfile(idx)">
+                  <ion-icon slot="start" size="medium" name="checkmark-circle-outline"></ion-icon>
+                  Approve
+                </ion-button>
+              </ion-col>
+
+            </ion-row>
+          </span>
+
+          <span *ngIf="(unApprovedEmployees && unApprovedEmployees.length === 0)">
+            <ion-item lines="none" class="d-flex align-items-center justify-content-center">
+              <ion-text color="danger" class="text-center">
+                <h6>
+                  <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+                  <br>
+                  No employee profile(s) to be approved.
+                </h6>
+              </ion-text>
+            </ion-item>
+          </span>
+        </ion-list>
+      </ion-col>
+
+      <ion-col size="12" *ngIf="(approvalSegmentButton === 'leaveApproval')">
+
+        <ion-list>
+          <ion-list-header>
+            <h6>
+              <ion-text color="primary">
+                Pending Leave Approvals:
+              </ion-text>
+            </h6>
+          </ion-list-header>
+
+          <!-- Skeleton view -->
+          <span *ngIf="(!unApprovedLeaves && !errorMsg)">
+            <ion-row *ngFor="let number of sharedFunctions.generateArray(3)">
+              <ion-col size="12">
+                <ion-item lines="none">
+                  <ion-avatar slot="start">
+                    <ion-skeleton-text animated></ion-skeleton-text>
+                  </ion-avatar>
+
+                  <ion-label class="custom-font">
+                    <ion-skeleton-text animated style="width: 30%;"></ion-skeleton-text>
+                    <ion-skeleton-text animated style="width: 20%;"></ion-skeleton-text>
+                    <ion-skeleton-text animated style="width: 10%;"></ion-skeleton-text>
+                  </ion-label>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </span>
+
+          <!-- Main view with unapproved leaves data -->
+          <span *ngIf="(unApprovedLeaves && unApprovedLeaves.length > 0)">
+            <ion-row *ngFor="let leave of unApprovedLeaves; let idx = index">
+
+              <ion-col size-xs="12" size-sm="12" size-md="9">
+                <ion-item lines="none">
+                  <ion-avatar slot="start">
+                    <ion-img *ngIf="leave.empId['photoImg']" src="{{ leave.empId['photoImg'] }}" alt="Pic"></ion-img>
+
+                    <ion-icon *ngIf="!leave.empId['photoImg']" size="large" color="medium" name="person-circle-outline"></ion-icon>
+                  </ion-avatar>
+
+                  <ion-label class="custom-font">
+                    <h5>
+                      {{ leave.empId['empName'] }}
+                    </h5>
+                    <p *ngIf="(storageEmpPosition === 'admin')">
+                      Company Name:
+                      <strong>
+                        {{ leave.empId['companyId']['companyName'] }}
+                      </strong>
+                    </p>
+                    <p *ngIf="(storageEmpPosition === 'admin' || storageEmpPosition === 'company_admin')">
+                      Branch Name:
+                      <strong>
+                        {{ leave.empId['branchId']['branchName'] }}
+                      </strong>
+                    </p>
+                    <p>
+                      Position:
+                      <strong>
+                        {{ leave.empId['position'] | titlecase }}
+                      </strong>
+                    </p>
+                    <p>
+                      Leave Type:
+                      <strong>
+                        {{ leave.leaveType | titlecase }}
+                      </strong>
+                    </p>
+                    <p>
+                      Leave Duration:
+                      <strong>
+                        {{ leave.fromDate | date: 'MMM d, y' }} to {{ leave.tillDate | date: 'MMM d, y' }}
+                      </strong>
+                    </p>
+                    <p>
+                      Reason: <strong>{{ leave.reason }}</strong>
+                    </p>
+                  </ion-label>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size-xs="12" size-sm="12" size-md="3" class="d-flex justify-content-center">
+                <ion-button strong="true" size="medium" shape="round" mode="ios" fill="solid" color="primary" (click)="getLeaveApprovalConfirmation(idx)">
+                  <ion-icon slot="start" size="medium" name="checkmark-circle-outline"></ion-icon>
+                  Approve / Reject
+                </ion-button>
+              </ion-col>
+
+            </ion-row>
+          </span>
+
+          <span *ngIf="(unApprovedLeaves && unApprovedLeaves.length === 0)">
+            <ion-item lines="none" class="d-flex align-items-center justify-content-center">
+              <ion-text color="danger" class="text-center">
+                <h6>
+                  <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+                  <br>
+                  No leave record(s) to be approved.
+                </h6>
+              </ion-text>
+            </ion-item>
+          </span>
+        </ion-list>
+
+      </ion-col>
+
+      <ion-col size="12" *ngIf="(approvalSegmentButton === 'salaryAdvanceApproval')">
+
+        <ion-list>
+          <ion-list-header>
+            <h6>
+              <ion-text color="primary">
+                Pending Salary Advance Approvals:
+              </ion-text>
+            </h6>
+          </ion-list-header>
+
+          <!-- Skeleton view -->
+          <span *ngIf="(!unApprovedSalaryAdvances && !errorMsg)">
+            <ion-row *ngFor="let number of sharedFunctions.generateArray(3)">
+              <ion-col size="12">
+                <ion-item lines="none">
+                  <ion-avatar slot="start">
+                    <ion-skeleton-text animated></ion-skeleton-text>
+                  </ion-avatar>
+
+                  <ion-label class="custom-font">
+                    <ion-skeleton-text animated style="width: 30%;"></ion-skeleton-text>
+                    <ion-skeleton-text animated style="width: 20%;"></ion-skeleton-text>
+                    <ion-skeleton-text animated style="width: 10%;"></ion-skeleton-text>
+                  </ion-label>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </span>
+
+          <!-- Main view with unapproved salary advances data -->
+          <span *ngIf="(unApprovedSalaryAdvances && unApprovedSalaryAdvances.length > 0)">
+            <ion-row *ngFor="let advance of unApprovedSalaryAdvances; let idx = index">
+
+              <ion-col size-xs="12" size-sm="12" size-md="9">
+                <ion-item lines="none">
+                  <ion-avatar slot="start">
+                    <ion-img *ngIf="advance.empId['photoImg']" src="{{ advance.empId['photoImg'] }}" alt="Pic"></ion-img>
+
+                    <ion-icon *ngIf="!advance.empId['photoImg']" size="large" color="medium" name="person-circle-outline"></ion-icon>
+                  </ion-avatar>
+
+                  <ion-label class="custom-font">
+                    <h5>
+                      {{ advance.empId['empName'] }}
+                    </h5>
+                    <p *ngIf="(storageEmpPosition === 'admin')">
+                      Company Name:
+                      <strong>
+                        {{ advance.empId['companyId']['companyName'] }}
+                      </strong>
+                    </p>
+                    <p *ngIf="(storageEmpPosition === 'admin' || storageEmpPosition === 'company_admin')">
+                      Branch Name:
+                      <strong>
+                        {{ advance.empId['branchId']['branchName'] }}
+                      </strong>
+                    </p>
+                    <p>
+                      Position:
+                      <strong>
+                        {{ advance.empId['position'] | titlecase }}
+                      </strong>
+                    </p>
+                    <p>
+                      Advance Amount Requested:
+                      <strong>
+                        &#8377; {{ advance.advanceAmount }}
+                      </strong>
+                    </p>
+                    <p>
+                      Request Date:
+                      <strong>
+                        {{ advance.advanceDate | date: 'MMM d, y' }}
+                      </strong>
+                    </p>
+                    <p>
+                      Reason: <strong>{{ advance.reason }}</strong>
+                    </p>
+                  </ion-label>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size-xs="12" size-sm="12" size-md="3" class="d-flex justify-content-center">
+                <ion-button strong="true" size="medium" shape="round" mode="ios" fill="solid" color="primary" (click)="getSalaryAdvanceApprovalConfirmation(idx)">
+                  <ion-icon slot="start" size="medium" name="checkmark-circle-outline"></ion-icon>
+                  Approve / Reject
+                </ion-button>
+              </ion-col>
+
+            </ion-row>
+          </span>
+
+          <span *ngIf="(unApprovedSalaryAdvances && unApprovedSalaryAdvances.length === 0)">
+            <ion-item lines="none" class="d-flex align-items-center justify-content-center">
+              <ion-text color="danger" class="text-center">
+                <h6>
+                  <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+                  <br>
+                  No salary advance record(s) to be approved.
+                </h6>
+              </ion-text>
+            </ion-item>
+          </span>
+        </ion-list>
+
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="(mainSegmentButton === 'profile')">
+
+      <!-- Skeleton view -->
+      <ion-col size="12" *ngIf="(!employee && !errorMsg)">
+        <ion-row>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" *ngFor="let number of sharedFunctions.generateArray(19)">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12">
+                <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12">
+                <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </ion-col>
+
+        </ion-row>
+      </ion-col>
+
+      <!-- Main view with data for profile -->
+      <ion-col size="12" *ngIf="employee">
+        <ion-row>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Company Name</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>{{ employee?.companyId['companyName'] }}</small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Branch Name</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>{{ employee?.branchId['branchName'] }}</small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Position</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12">
+                <small>{{ sharedFunctions.formatEmployeePosition(employee?.position) }}</small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Salary Type</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>{{ employee?.salaryType | titlecase }}</small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Salary Amount</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>&#8377; {{ employee?.salaryAmount }}</small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Employee ID</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>{{ (employee?.empId) ? employee?.empId : "NA" }}</small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Joining Date</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" *ngIf="employee?.joiningDate">
+                <small>{{ employee?.joiningDate | date: 'dd-MM-yyyy' }}</small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" *ngIf="!employee?.joiningDate">
+                <small>NA</small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Working Time</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>{{ employee?.inTime | date: 'hh:mm a' }} to {{ employee?.outTime | date: 'hh:mm a'}}</small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Employee Name</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>
+                  {{ (employee?.empName) ? employee?.empName : "NA" }}
+                </small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Mobile No.</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>
+                  {{ (employee?.mobileNumber) ? employee?.mobileNumber : "NA" }}
+                </small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" *ngIf="(storageEmpPosition === 'employee')">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Working Days</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>{{ empWorkingDays }}</small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+            <ion-row>
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small><strong>Username</strong></small>
+              </ion-col>
+
+              <ion-col size-xs="6" size-sm="6" size-md="12" class="pt-0 pb-0">
+                <small>{{ employee?.username }}</small>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size="12">
+            <form novalidate [formGroup]="updateProfileForm" (ngSubmit)="updateProfile()">
+
+              <ion-row>
+
+                <ion-col size-xs="12" size-sm="12" size-md="3" *ngIf="(storageEmpPosition != 'employee')">
+                  <ion-item>
+                    <ion-label position="stacked" color="primary">
+                      Working Days
+                    </ion-label>
+
+                    <ion-select placeholder="Select working day(s)" id="workingDays" multiple="true" formControlName="workingDays" class="custom-font">
+                      <ion-select-option *ngFor="let day of workingDays" value="{{ day | lowercase }}">
+                        {{ day }}
+                      </ion-select-option>
+                    </ion-select>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.workingDays" class="text-danger">
+                    {{ formErrors.workingDays }}
+                  </small>
+                </ion-col>
+
+                <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      Email ID
+                    </ion-label>
+
+                    <ion-input autocapitalize="on" id="emailId" type="email" class="custom-font" formControlName="emailId"></ion-input>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.emailId" class="text-danger">
+                    {{ formErrors.emailId }}
+                  </small>
+                </ion-col>
+
+                <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      Date of Birth
+                    </ion-label>
+
+                    <ion-datetime pickerFormat="MMM DD, YYYY" displayFormat="MMM DD, YYYY" min="1970" max="{{ maxDob }}" id="dob" class="custom-font" formControlName="dob"></ion-datetime>
+
+                    <small *ngIf="formErrors.dob" class="text-danger">
+                      {{ formErrors.dob }}
+                    </small>
+                  </ion-item>
+                </ion-col>
+
+                <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      Address
+                    </ion-label>
+
+                    <ion-textarea autocapitalize="on" id="address" type="text" class="custom-font" formControlName="address"></ion-textarea>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.address" class="text-danger">
+                    {{ formErrors.address }}
+                  </small>
+                </ion-col>
+
+                <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      Bank A/C No.
+                    </ion-label>
+
+                    <ion-input id="bankAccNo" type="text" class="custom-font" formControlName="bankAccNo"></ion-input>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.bankAccNo" class="text-danger">
+                    {{ formErrors.bankAccNo }}
+                  </small>
+                </ion-col>
+
+                <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      Bank IFSC
+                    </ion-label>
+
+                    <ion-input autocapitalize="on" id="bankIfsc" type="text" class="custom-font" formControlName="bankIfsc"></ion-input>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.bankIfsc" class="text-danger">
+                    {{ formErrors.bankIfsc }}
+                  </small>
+                </ion-col>
+
+                <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      Aadhaar No.
+                    </ion-label>
+
+                    <ion-input id="aadhaar" type="text" class="custom-font" formControlName="aadhaar"></ion-input>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.aadhaar" class="text-danger">
+                    {{ formErrors.aadhaar }}
+                  </small>
+                </ion-col>
+
+                <ion-col size-xs="12" size-sm="12" size-md="3" class="pt-0 pb-0">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      PAN No.
+                    </ion-label>
+
+                    <ion-input autocapitalize="on" id="pan" type="text" class="custom-font" formControlName="pan"></ion-input>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.pan" class="text-danger">
+                    {{ formErrors.pan }}
+                  </small>
+                </ion-col>
+
+                <ion-col size="12">
+                  <ion-button mode="ios" color="primary" strong="true" expand="block" size="medium" type="submit" [disabled]="!updateProfileForm.valid">
+                    <ion-icon slot="start" name="pencil-outline" size="medium"></ion-icon>
+                    Update
+                  </ion-button>
+                </ion-col>
+
+              </ion-row>
+
+            </form>
+          </ion-col>
+
+        </ion-row>
+
+      </ion-col>
+
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>

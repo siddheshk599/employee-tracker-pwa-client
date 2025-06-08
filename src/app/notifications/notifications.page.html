@@ -1,0 +1,153 @@
+<ion-content>
+  <ion-grid>
+
+    <ion-row>
+
+      <ion-col size="12" *ngIf="errorMsg">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-segment mode="md" color="primary" [(ngModel)]="segmentButton" swipe-gesture="true" (ionChange)="segmentChange($event)">
+          <ion-segment-button value="notification">
+            <small>Notification</small>
+          </ion-segment-button>
+
+          <ion-segment-button value="chat">
+            <small>Chat</small>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row *ngIf="(segmentButton === 'notification' && !errorMsg)">
+      <!-- Skeleton screen -->
+      <ion-row *ngIf="(!notifications && !errorMsg)">
+        <ion-col size="12" *ngFor="let number of sharedFunctions.generateArray(10)">
+
+          <ion-row>
+            <ion-col size="4">
+              <ion-skeleton-text animated style="width: 100%;"></ion-skeleton-text>
+            </ion-col>
+
+            <ion-col size="1"></ion-col>
+
+            <ion-col size="7">
+              <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+            </ion-col>
+          </ion-row>
+
+        </ion-col>
+      </ion-row>
+
+      <ion-list *ngIf="notifications">
+
+        <span *ngIf="(notifications.length > 0)">
+          <ion-row *ngFor="let notification of notifications">
+
+            <ion-col size="12">
+              <ion-item lines="none">
+                <ion-text>
+                  <strong>({{ notification['createdAt'] | date: 'MMM d, y' }})</strong> - {{ notification['message'] }}
+                </ion-text>
+              </ion-item>
+            </ion-col>
+
+          </ion-row>
+        </span>
+
+        <span *ngIf="(notifications.length === 0)">
+          <ion-item lines="none">
+            <ion-text color="danger">
+              <h6>
+                <ion-icon name="alert-circle" size="large"></ion-icon>
+                <strong>No notifications.</strong>
+              </h6>
+            </ion-text>
+          </ion-item>
+        </span>
+
+      </ion-list>
+    </ion-row>
+
+    <ion-row *ngIf="(segmentButton === 'chat' && !errorMsg)">
+
+      <ion-col size="12">
+        <ion-button mode="ios" color="primary" fill="outline" expand="block" (click)="selectChatReceiver()">
+          <span *ngIf="!receiverEmployee">
+            Select a person to chat with
+          </span>
+
+          <span *ngIf="receiverEmployee">
+            Sending messages to:
+            <strong>
+              {{ receiverEmployee.empName + ', ' }} {{ sharedFunctions.formatEmployeePosition(receiverEmployee.position) }}
+            </strong>
+          </span>
+        </ion-button>
+      </ion-col>
+
+      <ion-col size="12" *ngIf="(!filteredChats || filteredChats.length === 0)">
+        <ion-text color="primary" class="text-center">
+          Start your conversation by sending a message.
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12" *ngIf="(filteredChats || filteredChats.length > 0)" class="mb-5">
+        <ion-list>
+
+          <ion-item lines="none" *ngFor="let chat of filteredChats" class="mb-3">
+            <span class="{{
+              (chat.senderEmpId['_id'] != storageEmpId) ? 'text-left' : 'text-right'
+            }}" style="width: 100%;">
+              <strong>
+                @{{ (
+                  (
+                    chat.senderEmpId['position'] === 'admin' ||
+                    chat.senderEmpId['position'] === 'company_admin' ||
+                    chat.senderEmpId['position'] === 'branch_manager'
+                  ) ? chat.senderEmpId['position'] : chat.senderEmpId['empName']
+                ) | uppercase }}
+              </strong>
+              <br>
+
+              <span>
+                {{ chat.message }}
+              </span>
+
+              <br>
+              <small>
+                <ion-text color="primary">
+                  <strong>
+                    {{ chat.createdAt | date: 'MMM d, y hh:mm a' }}
+                  </strong>
+                </ion-text>
+              </small>
+            </span>
+          </ion-item>
+
+        </ion-list>
+      </ion-col>
+
+      <ion-col size="12" class="fixed-bottom">
+        <ion-item lines="none">
+          <ion-input type="text" placeholder="Type a message..." autocapitalize="off" [(ngModel)]="textMsg"></ion-input>
+
+          <ion-button mode="ios" strong="true" color="primary" size="large" [disabled]="!textMsg" (click)="sendChatMsg()">
+            <ion-icon slot="icon-only" size="large" name="send"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-col>
+
+    </ion-row>
+
+  </ion-grid>
+</ion-content>

@@ -1,0 +1,197 @@
+<ion-content>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" class="d-flex justify-content-end">
+        <ion-button color="danger" mode="ios" fill="clear" size="medium" (click)="dismissModal()">
+          <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-col>
+
+      <ion-col size="12" class="d-flex justify-content-center">
+        <ion-text color="primary" class="text-center">
+          <strong>
+            Edit {{ (
+              (isBranchEditMode) ? 'Branch Details' : 'Employee Position'
+            ) }}
+          </strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12" *ngIf="errorMsg">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+    </ion-row>
+
+    <!-- Edit branch form -->
+    <ion-row *ngIf="isBranchEditMode">
+      <!-- Branch location map -->
+      <ion-col size="12">
+        <ion-item lines="none" class="mb-2">
+          <ion-input type="text" placeholder="Search by address..." autocapitalize="on" [(ngModel)]="locationAddress" [ngModelOptions]="{ standalone: true }"></ion-input>
+
+          <ion-button mode="ios" strong="true" fill="clear" shape="round" size="medium" [disabled]="!locationAddress" (click)="getLocationByAddress()">
+            <ion-icon slot="icon-only" size="medium" name="search-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+
+        <div class="embed-responsive embed-responsive-16by9">
+          <iframe class="embed-responsive-item" [src]="googleMapsURL"></iframe>
+
+          <ion-button class="m-2" mode="ios" size="large" (click)="getLocation()" color="primary">
+            <ion-icon slot="icon-only" name="location-outline" size="large"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-col>
+
+      <!-- Branch details update form -->
+      <ion-col size="12">
+
+        <form novalidate [formGroup]="editBranchForm" (ngSubmit)="editBranchDetails()">
+          <ion-row>
+            <ion-col size="12">
+              <ion-item>
+                <ion-label color="primary" position="floating">
+                  Branch Name
+                </ion-label>
+
+                <ion-input id="branchName" type="text" formControlName="branchName" autocapitalize="on"></ion-input>
+              </ion-item>
+
+              <small *ngIf="formErrors.branchName" class="text-danger">
+                {{ formErrors.branchName }}
+              </small>
+            </ion-col>
+
+            <ion-col size="12">
+              <ion-item>
+                <ion-label color="primary" position="floating">
+                  Branch Address
+                </ion-label>
+
+                <ion-textarea id="branchAddress" type="text" formControlName="branchAddress" autocapitalize="on"></ion-textarea>
+              </ion-item>
+
+              <small *ngIf="formErrors.branchAddress" class="text-danger">
+                {{ formErrors.branchAddress }}
+              </small>
+            </ion-col>
+
+            <ion-col size="12">
+              <ion-text color="primary" color="primary">
+                <small>Branch Location:</small>
+              </ion-text>
+
+              <ion-row>
+                <ion-col size="6">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      Latitude
+                    </ion-label>
+
+                    <ion-input id="branchLatitude" type="number" formControlName="branchLatitude" (ionChange)="onBranchLocationChange()"></ion-input>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.branchLatitude" class="text-danger">
+                    {{ formErrors.branchLatitude }}
+                  </small>
+                </ion-col>
+
+                <ion-col size="6">
+                  <ion-item>
+                    <ion-label color="primary" position="floating">
+                      Longitude
+                    </ion-label>
+
+                    <ion-input id="branchLongitude" type="number" formControlName="branchLongitude" (ionChange)="onBranchLocationChange()"></ion-input>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.branchLongitude" class="text-danger">
+                    {{ formErrors.branchLongitude }}
+                  </small>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+
+          </ion-row>
+
+          <ion-row>
+            <ion-col size-xs="12" size-sm="12" size-md="6">
+              <ion-button type="submit" color="primary" fill="solid" strong="true" mode="ios" size="medium" expand="block" [disabled]="!editBranchForm.valid">
+                <ion-icon slot="start" name="pencil-outline" size="medium"></ion-icon>
+                Edit
+              </ion-button>
+            </ion-col>
+
+            <ion-col size-xs="12" size-sm="12" size-md="6">
+              <ion-button type="button" color="primary" fill="solid" strong="true" mode="ios" size="medium" expand="block" (click)="resetEditBranchFormToOldValues()">
+                <ion-icon slot="start" name="refresh-outline" size="medium"></ion-icon>
+                Reset Form
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </form>
+
+      </ion-col>
+
+    </ion-row>
+
+    <!-- Edit position -->
+    <ion-row *ngIf="!isBranchEditMode">
+      <ion-col size-xs="12" size-sm="8" size-md="9">
+        <ion-item>
+          <ion-label color="primary" position="floating">
+            Position Name
+          </ion-label>
+
+          <ion-input type="text" autocapitalize="off" class="custom-font" id="newPosition" [(ngModel)]="newPosition"></ion-input>
+        </ion-item>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="4" size-md="3">
+        <ion-button mode="ios" fill="solid" color="primary" expand="block" strong="true" size="medium" (click)="editPosition()" [disabled]="(newPosition?.length === 0)">
+          <ion-icon slot="start" name="pencil-outline" size="medium"></ion-icon>
+          Edit
+        </ion-button>
+      </ion-col>
+
+      <!-- Available position' -->
+      <ion-col size="12">
+        <table class="table table-striped table-hover">
+          <thead>
+
+            <tr class="custom-primary-bg">
+              <th colspan="3" class="text-center pt-0 pb-0">
+                <ion-text color="light">
+                  <small>
+                    <strong>Employee Positions</strong>
+                  </small>
+                </ion-text>
+              </th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let position of inputData[0].positions; let idx = index">
+              <td class="text-center pt-0 pb-0">
+                <small>{{ position }}</small>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>

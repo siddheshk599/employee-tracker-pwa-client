@@ -1,0 +1,26 @@
+<ion-tabs>
+
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="home" layout="label-hide">
+      <ion-icon name="home-outline"></ion-icon>
+      <ion-label>Home</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="report/{{ storageEmpId }}" layout="label-hide" *ngIf="(storageEmpPosition != 'admin' && storageEmpPosition != 'company_admin')">
+      <ion-icon name="document-text-outline"></ion-icon>
+      <ion-label>Reports</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="employee" layout="label-hide" *ngIf="(storageEmpPosition != 'employee')">
+      <ion-icon name="people-outline"></ion-icon>
+      <ion-label>Employees</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="settings" layout="label-hide">
+      <ion-icon name="cog-outline"></ion-icon>
+      <ion-label>Settings</ion-label>
+    </ion-tab-button>
+
+  </ion-tab-bar>
+
+</ion-tabs>

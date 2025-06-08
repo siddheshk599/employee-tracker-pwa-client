@@ -1,0 +1,114 @@
+<ion-content>
+  <ion-grid class="mt-2">
+
+    <ion-row>
+      <ion-col size="12">
+        <ion-text color="primary" class="text-left">
+          <h5>
+            <strong>Ask for Leave</strong>
+          </h5>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="errorMsg">
+      <ion-col size="12">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+    </ion-row>
+
+    <!-- Skeleton view -->
+    <ion-row *ngIf="(!employee  && !errorMsg)">
+      <ion-col size-xs="12" size-sm="12" size-md="4" *ngFor="let number of sharedFunctions.generateArray(3)">
+        <ion-skeleton-text animated style="width: 65%;"></ion-skeleton-text>
+        <br>
+
+        <ion-skeleton-text animated style="width: 85%;"></ion-skeleton-text>
+      </ion-col>
+    </ion-row>
+
+    <!-- Main view with employee's data -->
+    <ion-row *ngIf="employee">
+      <form class="w-100" novalidate [formGroup]="submitLeaveForm">
+        <ion-row>
+          <ion-col size-xs="12" size-sm="12" size-md="4">
+            <ion-item lines="none">
+              <ion-label color="primary" position="floating">
+                From Date
+              </ion-label>
+
+              <ion-datetime pickerFormat="MMM DD, YYYY" displayFormat="MMM DD, YYYY" min="{{ minDate }}" max="{{ minDate }}" id="fromDate" class="custom-font" formControlName="fromDate"></ion-datetime>
+            </ion-item>
+
+            <small *ngIf="formErrors.fromDate" class="text-danger">
+              {{ formErrors.fromDate }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="4">
+            <ion-item lines="none">
+              <ion-label color="primary" position="floating">
+                Till Date
+              </ion-label>
+
+              <ion-datetime pickerFormat="MMM DD, YYYY" displayFormat="MMM DD, YYYY" min="{{ minDate }}" id="tillDate" class="custom-font" formControlName="tillDate"></ion-datetime>
+            </ion-item>
+
+            <small *ngIf="formErrors.fromDate" class="text-danger">
+              {{ formErrors.fromDate }}
+            </small>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="4">
+            <ion-item lines="none">
+              <ion-label color="primary" position="stacked">
+                Leave Type
+              </ion-label>
+
+              <ion-select id="leaveType" class="custom-font" formControlName="leaveType">
+                <ion-select-option *ngFor="let type of leaveTypes" value="{{ type }}">
+                  {{ type | titlecase }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <small *ngIf="formErrors.leaveType" class="text-danger">
+              {{ formErrors.leaveType }}
+            </small>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-item lines="none">
+              <ion-label color="primary" position="floating">
+                Reason
+              </ion-label>
+  
+              <ion-textarea autocapitalize="on" id="reason" type="text" class="custom-font" formControlName="reason"></ion-textarea>
+            </ion-item>
+
+            <small *ngIf="formErrors.reason" class="text-danger">
+              {{ formErrors.reason }}
+            </small>
+          </ion-col>
+        </ion-row>
+        
+      </form>
+
+      <ion-col size="12" class="fixed-bottom">
+        <ion-button size="medium" mode="ios" color="primary" strong="true" expand="block" fill="solid" type="submit" [disabled]="!submitLeaveForm.valid" (click)="getLeaveConfirmation()">
+          <ion-icon slot="start" name="calendar-outline" size="medium"></ion-icon>
+          Ask for leave
+        </ion-button>
+      </ion-col>
+
+    </ion-row>
+
+  </ion-grid> 
+</ion-content>

@@ -1,0 +1,19 @@
+<ion-app>
+
+  <ion-header>
+
+    <ion-toolbar color="light">
+      <ion-img src="assets/images/logo.svg" style="width: 60px; height: 60px;" class="ml-1" routerLink="/tabs/home"></ion-img>
+
+      <ion-buttons slot="end">
+        <ion-button size="large" shape="round" routerLink="/tabs/notifications">
+          <ion-icon size="large" mode="ios" name="notifications-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+       
+  </ion-header>
+
+  <ion-router-outlet id="main" class="content-top-margin"></ion-router-outlet>
+
+</ion-app>

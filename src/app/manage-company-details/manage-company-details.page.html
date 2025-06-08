@@ -1,0 +1,876 @@
+<ion-content>
+
+  <ion-grid class="mt-2">
+
+    <ion-row>
+      <ion-col size="12">
+        <ion-text color="primary">
+          <h5>
+            <strong>Manage Company Details</strong>
+          </h5>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+
+    <!-- Segments to perform actions -->
+    <ion-row>
+      <ion-col size="12">
+
+        <ion-segment mode="md" color="primary" [(ngModel)]="segmentButton" swipe-gesture="true" (ionChange)="segmentChange($event)">
+          <ion-row>
+
+            <ion-col size-xs="6" size-sm="3" size-md="3" [hidden]="!(empPosition === 'admin')">
+              <ion-segment-button value="addCompany" #addCompanySegment>
+                <small>Add Company</small>
+              </ion-segment-button>
+            </ion-col>
+
+            <ion-col size-xs="6" size-sm="3" size-md="3">
+              <ion-segment-button value="addBranch" #addBranchSegment>
+                <small>Add Branch</small>
+              </ion-segment-button>
+            </ion-col>
+
+            <ion-col size-xs="6" size-sm="3" size-md="3">
+              <ion-segment-button value="companyDetails">
+                <small>Company Details</small>
+              </ion-segment-button>
+            </ion-col>
+
+            <ion-col size-xs="6" size-sm="3" size-md="3">
+              <ion-segment-button value="branchesAndPositions">
+                <small>Branches & Positions</small>
+              </ion-segment-button>
+            </ion-col>
+
+          </ion-row>
+        </ion-segment>
+
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="(segmentButton === 'addCompany')">
+
+      <ion-col size-xs="12" size-sm="12" size-md="6">
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="primary" class="text-left">
+              <h6>
+                <strong>Add Company Details</strong>
+              </h6>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+
+        <ion-item lines="none" class="mb-2">
+          <ion-input type="text" placeholder="Search by address..." autocapitalize="on" [(ngModel)]="locationAddress"></ion-input>
+
+          <ion-button mode="ios" strong="true" fill="clear" shape="round" size="medium" [disabled]="!locationAddress" (click)="getLocationByAddress()">
+            <ion-icon slot="icon-only" size="medium" name="search-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+
+        <div class="embed-responsive embed-responsive-4by3">
+          <iframe class="embed-responsive-item" [src]="googleMapsURL"></iframe>
+
+          <ion-button class="m-2" mode="ios" size="large" (click)="getLocation()" color="primary">
+            <ion-icon slot="icon-only" name="location-outline" size="large"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="6">
+        <form novalidate [formGroup]="addCompanyForm" (ngSubmit)="addCompany()">
+          <ion-row>
+
+            <ion-col size="12" *ngIf="errorMsg">
+              <p class="text-center text-danger" *ngIf="!errorMsg.status">
+                <ion-icon name="alert-circle" color="danger"></ion-icon>
+                Error {{ errorMsg }}
+              </p>
+              <p class="text-center text-danger" *ngIf="errorMsg.status">
+                <ion-icon name="alert-circle" color="danger"></ion-icon>
+                Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+              </p>
+            </ion-col>
+
+            <ion-col size="12">
+              <ion-item>
+                <ion-label color="primary" position="floating" for="companyName">
+                  Company Name
+                </ion-label>
+
+                <ion-input id="companyName" type="text" formControlName="companyName" autocapitalize="on"></ion-input>
+              </ion-item>
+
+              <small class="text-danger" *ngIf="formErrors.companyName">
+                {{ formErrors.companyName }}
+              </small>
+            </ion-col>
+
+            <ion-col size="12">
+              <ion-item>
+                <ion-label color="primary" position="floating" for="companyAddress">
+                  Company Address
+                </ion-label>
+
+                <ion-textarea id="companyAddress" formControlName="companyAddress" autocapitalize="on"></ion-textarea>
+              </ion-item>
+
+              <small *ngIf="formErrors.companyAddress" class="text-danger">
+                {{ formErrors.companyAddress }}
+              </small>
+            </ion-col>
+
+            <ion-col size="12">
+              <ion-item>
+                <ion-label color="primary" position="floating" for="branchName">
+                  Branch Name
+                </ion-label>
+
+                <ion-input id="branchName" type="text" formControlName="branchName" autocapitalize="on"></ion-input>
+              </ion-item>
+
+              <small *ngIf="formErrors.branchName" class="text-danger">
+                {{ formErrors.branchName }}
+              </small>
+            </ion-col>
+
+            <ion-col size="6">
+              <ion-button mode="ios" size="medium" expand="block" fill="solid" [disabled]="!addCompanyForm.valid" color="primary" type="submit" strong="true">
+                <ion-icon slot="start" name="add-circle-outline" size="medium"></ion-icon>
+                Add Company
+              </ion-button>
+            </ion-col>
+
+            <ion-col size="6">
+              <ion-button mode="ios" size="medium" expand="block" fill="solid" color="primary" type="submit" strong="true" (click)="resetFormToNullValues('addCompanyForm')">
+                <ion-icon slot="start" name="refresh-circle-outline" size="medium"></ion-icon>
+                Reset Form
+              </ion-button>
+            </ion-col>
+
+          </ion-row>
+
+        </form>
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row *ngIf="(segmentButton === 'addBranch')">
+
+      <ion-col size="12" *ngIf="errorMsg">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+
+      <!-- Skeleton view -->
+      <ion-col size="12" *ngIf="(!companies && !errorMsg)">
+        <ion-row>
+
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <div class="embed-responsive embed-responsive-4by3">
+              <ion-skeleton-text animated style="width: 100%;" class="embed-responsive-item"></ion-skeleton-text>
+            </div>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="6" *ngFor="let number of sharedFunctions.generateArray(5)">
+            <ion-row>
+              <ion-col size="12">
+                <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+              </ion-col>
+
+              <ion-col size="12">
+                <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+        </ion-row>
+      </ion-col>
+
+      <!-- Main view -->
+      <ion-col size="12" *ngIf="companies">
+        <ion-row>
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <ion-row>
+              <ion-col size="12">
+                <ion-text color="primary" class="text-left">
+                  <h6>
+                    <strong>Add Branch Details</strong>
+                  </h6>
+                </ion-text>
+              </ion-col>
+            </ion-row>
+
+            <ion-item lines="none" class="mb-2">
+              <ion-input type="text" placeholder="Search by address..." autocapitalize="on" [(ngModel)]="locationAddress"></ion-input>
+
+              <ion-button mode="ios" strong="true" fill="clear" size="medium" [disabled]="!locationAddress" (click)="getLocationByAddress()">
+                <ion-icon slot="icon-only" size="medium" name="search-outline"></ion-icon>
+              </ion-button>
+            </ion-item>
+
+            <div class="embed-responsive embed-responsive-4by3">
+              <iframe class="embed-responsive-item" [src]="googleMapsURL"></iframe>
+
+              <ion-button class="m-2" mode="ios" size="large" (click)="getLocation()" color="primary">
+                <ion-icon slot="icon-only" name="location-outline" size="large"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <form novalidate [formGroup]="addBranchForm" (ngSubmit)="addBranch()">
+              <ion-row>
+
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-label color="primary" position="stacked">
+                      Company
+                    </ion-label>
+
+                    <ion-select placeholder="Select a company" id="companyId" formControlName="companyId">
+                      <ion-select-option *ngFor="let company of companies" value="{{ company._id }}">
+                        {{ company.companyName }}
+                      </ion-select-option>
+                    </ion-select>
+                  </ion-item>
+
+                  <small class="text-danger" *ngIf="formErrors.companyId">
+                    {{ formErrors.companyId }}
+                  </small>
+                </ion-col>
+
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-label color="primary" position="floating" for="branchName">
+                      Branch Name
+                    </ion-label>
+
+                    <ion-input id="branchName" type="text" formControlName="branchName" autocapitalize="on"></ion-input>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.branchName" class="text-danger">
+                    {{ formErrors.branchName }}
+                  </small>
+                </ion-col>
+
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-label color="primary" position="floating" for="branchAddress">
+                      Branch Address
+                    </ion-label>
+
+                    <ion-textarea id="branchAddress" formControlName="branchAddress" autocapitalize="on"></ion-textarea>
+                  </ion-item>
+
+                  <small *ngIf="formErrors.branchAddress" class="text-danger">
+                    {{ formErrors.branchAddress }}
+                  </small>
+                </ion-col>
+
+                <ion-col size="6">
+                  <ion-button mode="ios" size="medium" expand="block" fill="solid" [disabled]="!addBranchForm.valid" color="primary" type="submit" strong="true">
+                    <ion-icon slot="start" name="add-circle-outline" size="medium"></ion-icon>
+                    Add Branch
+                  </ion-button>
+                </ion-col>
+
+                <ion-col size="6">
+                  <ion-button mode="ios" size="medium" expand="block" fill="solid" color="primary" type="submit" strong="true" (click)="resetFormToNullValues('addBranchForm')">
+                    <ion-icon slot="start" name="refresh-circle-outline" size="medium"></ion-icon>
+                    Reset Form
+                  </ion-button>
+                </ion-col>
+
+              </ion-row>
+
+            </form>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row *ngIf="(segmentButton === 'companyDetails')">
+
+      <ion-col size="12" *ngIf="errorMsg">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+
+      <!-- Skeleton view -->
+      <ion-col size="12" *ngIf="(!companies && !errorMsg)">
+        <ion-row>
+
+          <ion-col size="12">
+            <ion-skeleton-text animated style="width: 40%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-skeleton-text animated style="width: 40%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <div class="embed-responsive embed-responsive-4by3">
+              <ion-skeleton-text animated style="width: 100%;" class="embed-responsive-item"></ion-skeleton-text>
+            </div>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <ion-row>
+              <ion-col size="12">
+                <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+              </ion-col>
+
+              <ion-col size="12">
+                <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+              </ion-col>
+
+              <ion-col size="12">
+                <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-row>
+              <ion-col size="6">
+                <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+              </ion-col>
+
+              <ion-col size="6">
+                <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+              </ion-col>
+            </ion-row>
+          </ion-col>
+
+        </ion-row>
+      </ion-col>
+
+      <!-- Main view -->
+      <ion-col size="12" *ngIf="(companies && !errorMsg)">
+
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="primary" class="text-left">
+              <h6>
+                <strong>Edit Company Details</strong>
+              </h6>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="12">
+
+            <ion-item>
+              <ion-label color="primary" position="stacked">
+                Company Name
+              </ion-label>
+
+              <ion-select placeholder="Select a company" id="companyId" class="custom-font" (ionChange)="onCompanyChange('companyDetails')" [(ngModel)]="selectedCompanyId" [ngModelOptions]="{ standalone: true }">
+                <ion-select-option *ngFor="let company of companies" value="{{ company._id }}">
+                  {{ company.companyName }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+          </ion-col>
+
+          <ion-col size="12">
+            <form novalidate [formGroup]="editCompanyForm" (ngSubmit)="editCompanyDetails()">
+              <ion-row>
+                <ion-col size="12">
+                  <ion-text class="text-center" color="primary">
+                    <small>
+                      <strong>Edit Details of {{ companies[selectedCompanyIndex]?.companyName }}:</strong>
+                    </small>
+                  </ion-text>
+                </ion-col>
+
+                <!-- Company Details view -->
+                <ion-col size="12">
+                  <ion-row>
+                    <!-- Company Location map -->
+                    <ion-col size-xs="12" size-sm="12" size-md="6">
+
+                      <ion-item lines="none" class="mb-2">
+                        <ion-input type="text" placeholder="Search by address..." autocapitalize="on" [(ngModel)]="locationAddress" [ngModelOptions]="{ standalone: true }"></ion-input>
+
+                        <ion-button mode="ios" strong="true" fill="clear" shape="round" size="medium" [disabled]="!locationAddress" (click)="getLocationByAddress('companyDetails')">
+                          <ion-icon slot="icon-only" size="medium" name="search-outline"></ion-icon>
+                        </ion-button>
+                      </ion-item>
+
+                      <div class="embed-responsive embed-responsive-4by3">
+                        <iframe class="embed-responsive-item" [src]="googleMapsURL"></iframe>
+
+                        <ion-button class="m-2" mode="ios" size="large" (click)="getLocation('companyDetails')" color="primary">
+                          <ion-icon slot="icon-only" name="location-outline" size="large"></ion-icon>
+                        </ion-button>
+                      </div>
+
+                    </ion-col>
+
+                    <!-- Company details update form -->
+                    <ion-col size-xs="12" size-sm="12" size-md="6">
+                      <ion-row>
+
+                        <ion-col size="12">
+                          <ion-item>
+                            <ion-label color="primary" position="floating">
+                              Company Name
+                            </ion-label>
+
+                            <ion-input id="companyName" type="text" formControlName="companyName" autocapitalize="on"></ion-input>
+                          </ion-item>
+
+                          <small *ngIf="formErrors.companyName" class="text-danger">
+                            {{ formErrors.companyName }}
+                          </small>
+                        </ion-col>
+
+                        <ion-col size="12">
+                          <ion-item>
+                            <ion-label color="primary" position="floating">
+                              Company Address
+                            </ion-label>
+
+                            <ion-textarea id="companyAddress" type="text" formControlName="companyAddress" autocapitalize="on"></ion-textarea>
+                          </ion-item>
+
+                          <small *ngIf="formErrors.companyAddress" class="text-danger">
+                            {{ formErrors.companyAddress }}
+                          </small>
+                        </ion-col>
+
+                        <ion-col size="12">
+                          <ion-text color="primary" color="primary">
+                            <small>Company Location:</small>
+                          </ion-text>
+
+                          <ion-row>
+                            <ion-col size="6">
+                              <ion-item>
+                                <ion-label color="primary" position="floating">
+                                  Latitude
+                                </ion-label>
+
+                                <ion-input id="companyLatitude" type="number" formControlName="companyLatitude" (ionChange)="onCompanyLocationChange()"></ion-input>
+                              </ion-item>
+
+                              <small *ngIf="formErrors.companyLatitude" class="text-danger">
+                                {{ formErrors.companyLatitude }}
+                              </small>
+                            </ion-col>
+
+                            <ion-col size="6">
+                              <ion-item>
+                                <ion-label color="primary" position="floating">
+                                  Longitude
+                                </ion-label>
+
+                                <ion-input id="companyLongitude" type="number" formControlName="companyLongitude" (ionChange)="onCompanyLocationChange()"></ion-input>
+                              </ion-item>
+
+                              <small *ngIf="formErrors.companyLongitude" class="text-danger">
+                                {{ formErrors.companyLongitude }}
+                              </small>
+                            </ion-col>
+                          </ion-row>
+                        </ion-col>
+
+                      </ion-row>
+
+                    </ion-col>
+                  </ion-row>
+                </ion-col>
+
+                <ion-col size-xs="12" size-sm="12" size-md="6">
+                  <ion-button type="submit" color="primary" fill="solid" strong="true" mode="ios" size="medium" expand="block" [disabled]="!editCompanyForm.valid">
+                    <ion-icon slot="start" name="pencil-outline" size="medium"></ion-icon>
+                    Edit Company Details
+                  </ion-button>
+                </ion-col>
+
+                <ion-col size-xs="12" size-sm="12" size-md="6">
+                  <ion-button type="button" color="primary" fill="solid" strong="true" mode="ios" size="medium" expand="block" (click)="resetEditCompanyFormToOldValues()">
+                    <ion-icon slot="start" name="refresh-circle-outline" size="medium"></ion-icon>
+                    Reset Form
+                  </ion-button>
+                </ion-col>
+
+              </ion-row>
+            </form>
+          </ion-col>
+
+        </ion-row>
+
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row *ngIf="(segmentButton === 'branchesAndPositions')">
+
+      <ion-col size="12" *ngIf="errorMsg">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+
+      <!-- Skeleton view -->
+      <ion-col size="12" *ngIf="(!companies && !errorMsg)">
+
+        <ion-row>
+          <ion-col size="12">
+            <ion-skeleton-text animated style="width: 75%;"></ion-skeleton-text>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <ion-row>
+
+              <ion-col size="12">
+                <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+              </ion-col>
+
+              <ion-col size="12">
+                <ion-skeleton-text animated style="width: 75%;"></ion-skeleton-text>
+              </ion-col>
+
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <ion-row>
+
+              <ion-col size="12">
+                <ion-skeleton-text animated style="width: 75%;"></ion-skeleton-text>
+              </ion-col>
+
+              <ion-col size="12">
+                <ion-row>
+                  <ion-col size="10">
+                    <ion-skeleton-text animated style="width: 75%;"></ion-skeleton-text>
+                  </ion-col>
+
+                  <ion-col size="2">
+                    <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+                  </ion-col>
+                </ion-row>
+              </ion-col>
+
+            </ion-row>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <table class="table table-striped table-hover">
+              <thead>
+
+                <tr class="custom-primary-bg">
+                  <th colspan="3" class="text-center pt-0 pb-0">
+                    <ion-skeleton-text animated style="width: 75%;"></ion-skeleton-text>
+                  </th>
+                </tr>
+
+                <tr class="custom-primary-bg">
+                  <th scope="col" class="text-center pt-0 pb-0" *ngFor="let number of sharedFunctions.generateArray(3)">
+                    <ion-skeleton-text animated style="width: 75%;"></ion-skeleton-text>
+                  </th>
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr *ngFor="let number of sharedFunctions.generateArray(3)">
+                  <td class="text-center pt-0 pb-0" *ngFor="let number of sharedFunctions.generateArray(3)">
+                    <ion-skeleton-text animated style="width: 75%;"></ion-skeleton-text>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </ion-col>
+
+          <!-- Employee Positions' table -->
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <table class="table table-striped table-hover">
+              <thead>
+
+                <tr class="custom-primary-bg">
+                  <th colspan="3" class="text-center pt-0 pb-0">
+                    <ion-skeleton-text animated style="width: 75%;"></ion-skeleton-text>
+                  </th>
+                </tr>
+
+                <tr class="custom-primary-bg">
+                  <th scope="col" class="text-center pt-0 pb-0" *ngFor="let number of sharedFunctions.generateArray(3)">
+                    <ion-skeleton-text animated style="width: 75%;"></ion-skeleton-text>
+                  </th>
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr *ngFor="let number of sharedFunctions.generateArray(3)">
+                  <td class="text-center pt-0 pb-0" *ngFor="let number of sharedFunctions.generateArray(3)">
+                    <ion-skeleton-text animated style="width: 75%;"></ion-skeleton-text>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </ion-col>
+        </ion-row>
+
+      </ion-col>
+
+      <!-- Main view -->
+      <ion-col size="12" *ngIf="(companies && !errorMsg)">
+
+        <ion-row>
+          <ion-col size="12">
+            <ion-text color="primary" class="text-left">
+              <h6>
+                <strong>Edit Branches & Positions</strong>
+              </h6>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <!-- Select a company name for getting it's branches & positions -->
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <ion-row>
+
+              <ion-col size="12">
+                <ion-text class="text-center" color="primary">
+                  <small>
+                    <strong>Select company:</strong>
+                  </small>
+                </ion-text>
+              </ion-col>
+
+              <ion-col size="12">
+                <ion-item>
+                  <ion-label color="primary" position="stacked">
+                    Company Name
+                  </ion-label>
+
+                  <ion-select placeholder="Select a company" id="companyId" class="custom-font" (ionChange)="onCompanyChange('branchesAndPositions')" [(ngModel)]="selectedCompanyId" [ngModelOptions]="{ standalone: true }">
+                    <ion-select-option *ngFor="let company of companies" value="{{ company._id }}">
+                      {{ company.companyName }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+
+            </ion-row>
+          </ion-col>
+
+          <!-- Add position input -->
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <ion-row>
+
+              <ion-col size="12">
+                <ion-text class="text-center" color="primary">
+                  <small>
+                    <strong>Add an employee position:</strong>
+                  </small>
+                </ion-text>
+              </ion-col>
+
+              <ion-col size="12">
+                <ion-row>
+                  <ion-col size="10">
+                    <ion-item>
+                      <ion-label color="primary" position="floating">
+                        Position Name
+                      </ion-label>
+
+                      <ion-input type="text" autocapitalize="off" class="custom-font" id="newPosition" [(ngModel)]="newPosition"></ion-input>
+                    </ion-item>
+                  </ion-col>
+
+                  <ion-col size="2">
+                    <ion-button mode="ios" fill="solid" color="primary" expand="block" strong="true" size="medium" (click)="addNewEmployeePosition()" [disabled]="(newPosition?.length === 0)">
+                      Add
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </ion-col>
+
+            </ion-row>
+          </ion-col>
+
+          <!-- Branches' table -->
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <table class="table table-striped table-hover">
+              <thead>
+
+                <tr class="custom-primary-bg">
+                  <th colspan="3" class="text-center pt-0 pb-0">
+                    <ion-text color="light">
+                      <small>
+                        <strong>Branches</strong>
+                      </small>
+                    </ion-text>
+                  </th>
+                </tr>
+
+                <tr class="custom-primary-bg">
+                  <th scope="col" class="text-center pt-0 pb-0">
+                    <ion-text color="light">
+                      <small><strong>Name</strong></small>
+                    </ion-text>
+                  </th>
+
+                  <th scope="col" class="text-center pt-0 pb-0">
+                    <ion-text color="light">
+                      <small><strong>Address</strong></small>
+                    </ion-text>
+                  </th>
+
+                  <th scope="col" class="text-center pt-0 pb-0">
+                    <ion-text color="light">
+                      <small><strong>Action</strong></small>
+                    </ion-text>
+                  </th>
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr *ngIf="(companies[selectedCompanyIndex]?.branches?.length === 0)" class="text-center pt-0 pb-0">
+                  <td class="pt-0 pb-0">
+                    <ion-text color="danger">
+                      <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+                      No company branch record(s) found.
+                    </ion-text>
+                  </td>
+                </tr>
+
+                <tr *ngFor="let branch of companies[selectedCompanyIndex]?.branches; let idx = index">
+                  <td class="text-center pt-0 pb-0">
+                    <small>{{ branch.branchName }}</small>
+                  </td>
+
+                  <td class="text-center pt-0 pb-0">
+                    <small>{{ branch.branchAddress }}</small>
+                  </td>
+
+                  <td class="text-center pt-0 pb-0">
+                    <ion-button fill="clear" color="dark" size="small" mode="ios" (click)="openEditModal('branch', idx)">
+                      <ion-icon slot="icon-only" size="small" name="pencil-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+
+                    <ion-button fill="clear" color="dark" size="small" mode="ios" (click)="deletionConfirmation('branch', idx)" [disabled]="(companies[selectedCompanyIndex]?.branches?.length === 1)">
+                      <ion-icon slot="icon-only" size="small" name="trash-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </ion-col>
+
+          <!-- Employee Positions' table -->
+          <ion-col size-xs="12" size-sm="12" size-md="6">
+            <table class="table table-striped table-hover">
+              <thead>
+
+                <tr class="custom-primary-bg">
+                  <th colspan="3" class="text-center pt-0 pb-0">
+                    <ion-text color="light">
+                      <small>
+                        <strong>Employee Positions</strong>
+                      </small>
+                    </ion-text>
+                  </th>
+                </tr>
+
+                <tr class="custom-primary-bg">
+                  <th scope="col" class="text-center pt-0 pb-0">
+                    <ion-text color="light">
+                      <small><strong>Name</strong></small>
+                    </ion-text>
+                  </th>
+
+                  <th scope="col" class="text-center pt-0 pb-0">
+                    <ion-text color="light">
+                      <small><strong>Action</strong></small>
+                    </ion-text>
+                  </th>
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr *ngIf="(companies[selectedCompanyIndex]?.positions?.length === 0)" class="text-center pt-0 pb-0">
+                  <td class="pt-0 pb-0">
+                    <ion-text color="danger">
+                      <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+                      No employee position record(s) found.
+                    </ion-text>
+                  </td>
+                </tr>
+
+                <tr *ngFor="let position of companies[selectedCompanyIndex].positions; let idx = index">
+                  <td class="text-center pt-0 pb-0">
+                    <small>{{ position }}</small>
+                  </td>
+
+                  <td class="text-center pt-0 pb-0">
+                    <ion-button fill="clear" color="dark" size="small" mode="ios" (click)="openEditModal('position', idx)" [disabled]="((position === 'company_admin') ||
+                      (position === 'branch_manager'))">
+                      <ion-icon slot="icon-only" size="small" name="pencil-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+
+                    <ion-button fill="clear" color="dark" size="small" mode="ios" (click)="deletionConfirmation('position', idx)" [disabled]="((position === 'company_admin') ||
+                    (position === 'branch_manager'))">
+                      <ion-icon slot="icon-only" size="small" name="trash-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </ion-col>
+
+        </ion-row>
+
+      </ion-col>
+
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>

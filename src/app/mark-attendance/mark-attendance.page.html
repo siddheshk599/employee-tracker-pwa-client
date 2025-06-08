@@ -1,0 +1,232 @@
+<ion-content>
+
+  <ion-grid>
+
+    <ion-row *ngIf="errorMsg">
+      <ion-col size="12">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+    </ion-row>
+
+    <!-- Skeleton view -->
+    <ion-row *ngIf="(!employee && !errorMsg)">
+
+      <ion-col size="12">
+        <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="6">
+        <div class="embed-responsive embed-responsive-4by3">
+          <ion-skeleton-text animated style="width: 100%;" class="embed-responsive-item"></ion-skeleton-text>
+        </div>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="6">
+        <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+        <br>
+
+        <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+        <br>
+
+        <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+      </ion-col>
+
+    </ion-row>
+
+    <!-- Main view with employee data -->
+    <ion-row [hidden]="!(employee && canPunchInOut && !errorMsg)">
+
+      <!-- If attendance is being marked by branch manager -->
+      <ion-col size="12" *ngIf="employee">
+        <ion-text color="primary" class="text-left">
+          <h6>
+            <strong>
+              <span *ngIf="(employee._id === storageEmpId)">
+                Mark Your Attendance:
+              </span>
+
+              <span *ngIf="(employee._id != storageEmpId)">
+                Mark Attendance of {{ employee.empName }}:
+              </span>
+            </strong>
+          </h6>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="6">
+
+        <!-- Show branch location or camera image when not punched in -->
+        <ion-row [hidden]="(punchedIn || punchedOut)">
+          <ion-col size="12">
+            <ion-slides #notPunchedInSlides>
+              <ion-slide>
+                <div class="embed-responsive embed-responsive-4by3">
+                  <iframe class="embed-responsive-item" [src]="googleMapsURL"></iframe>
+                </div>
+              </ion-slide>
+
+              <ion-slide>
+                <ion-img *ngIf="cameraImg" style="width: 100%; height: 100%;"  [src]="cameraImg" alt="Camera_Image"></ion-img>
+
+                <div *ngIf="!cameraImg" class="d-flex align-items-center">
+                  <ion-text>
+                    You've not taken your picture.
+                  </ion-text>
+
+                  <ion-button mode="ios" size="medium" expand="block" fill="outline" color="primary"  strong="true" (click)="checkCameraPermission()">
+                    <ion-icon slot="start" name="camera-outline" size="medium"></ion-icon>
+                    Click your pic
+                  </ion-button>
+                </div>
+
+              </ion-slide>
+            </ion-slides>
+
+            <!-- Button to switch slides -->
+            <ion-button size="medium" fill="outline" color="primary" mode="ios" strong="true" expand="block" (click)="changeSlide(punchedIn)">
+              <ion-icon *ngIf="(slideText === 'Show branch location')" size="medium" name="chevron-back-circle-outline" slot="start"></ion-icon>
+
+              {{ slideText }}
+
+              <ion-icon *ngIf="(slideText != 'Show branch location')" size="medium" name="chevron-forward-circle-outline" slot="end"></ion-icon>
+            </ion-button>
+          </ion-col>
+
+          <ion-col size="12" *ngIf="punchedOut">
+            <ion-img style="width: 100%; height: 100%;" [src]="attendanceImg" alt="Attendance_Image"></ion-img>
+          </ion-col>
+        </ion-row>
+
+        <!-- Show location tracking map and punch-in image when punched-in -->
+        <ion-row [hidden]="!punchedIn">
+          <ion-col size="12">
+            <ion-slides #punchedInSlides>
+              <ion-slide>
+                <div class="embed-responsive embed-responsive-4by3">
+                  <div #mapElement class="embed-responsive-item"></div>
+                </div>
+
+              </ion-slide>
+
+              <ion-slide>
+                <ion-img style="width: 100%; height: 100%;" *ngIf="(cameraImg || attendanceImg)" [src]="(
+                  (cameraImg) ? cameraImg : attendanceImg
+                )" [alt]="((cameraImg) ? 'Camera_Image' : 'Attendance_Image')"></ion-img>
+              </ion-slide>
+            </ion-slides>
+
+            <!-- Button to switch slides -->
+            <ion-button size="medium" fill="outline" color="primary" mode="ios" strong="true" expand="block" (click)="changeSlide(punchedIn)">
+              <ion-icon *ngIf="(slideText === 'Track your location')" size="medium" name="chevron-back-circle-outline" slot="start"></ion-icon>
+
+              {{ slideText }}
+
+              <ion-icon *ngIf="(slideText != 'Track your location')" size="medium" name="chevron-forward-circle-outline" slot="end"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+
+      </ion-col>
+
+      <ion-col size-xs="12" size-sm="12" size-md="6">
+        <ion-row>
+          <ion-col size="12">
+            <strong>Your login location:</strong>
+          </ion-col>
+
+          <ion-col size="12" *ngIf="(employee && employee.branchId)">
+            {{ employee.branchId['branchName'] }}
+            <br>
+            {{ employee.branchId['branchAddress'] }}
+          </ion-col>
+
+          <ion-col size="12" *ngIf="(employee && employee.activeAttendanceId)">
+            You punched in at: <strong>{{ employee.activeAttendanceId['inTime'] | date: 'MMM d, y hh:mm a' }}</strong>
+          </ion-col>
+        </ion-row>
+
+        <ion-row *ngIf="((!punchedIn || punchedIn) && isNotAtMentionedLocation)">
+          <ion-col size="12" class="d-flex justify-content-center">
+            <ion-text color="danger" class="text-center">
+              <strong *ngIf="(distanceFromBranchInKM && (distanceFromBranchInKM > 0))">
+                You are {{ distanceFromBranchInKM * 1000 | number: '1.2-2' }} metre(s) away from your branch location.
+              </strong>
+            </ion-text>
+          </ion-col>
+
+          <ion-col size="12">
+            <ion-button mode="ios" size="medium" expand="block" fill="solid" (click)="isNotAtMentionedLocation = !isNotAtMentionedLocation" color="primary"  strong="true">
+              <ion-icon slot="start" size="medium" name="chevron-back-outline"></ion-icon>
+              Back
+            </ion-button>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size-xs="12" size-sm="12" size-md="6" *ngIf="!punchedOut">
+            <ion-button mode="ios" size="medium" expand="block" fill="outline" color="primary"  strong="true" (click)="checkCameraPermission()">
+              <ion-icon slot="start" name="camera-outline" size="medium"></ion-icon>
+              Take your picture
+            </ion-button>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="6" *ngIf="!punchedIn && !punchedOut && !isNotAtMentionedLocation">
+            <ion-button mode="ios" size="medium" expand="block" fill="solid" (click)="punchIn()" color="primary"  strong="true" [disabled]="!cameraImg">
+              <ion-icon slot="start" name="log-in-outline" size="medium"></ion-icon>
+              Punch In
+            </ion-button>
+          </ion-col>
+
+          <ion-col size-xs="12" size-sm="12" size-md="6" *ngIf="punchedIn && !isNotAtMentionedLocation">
+            <ion-button mode="ios" size="medium" expand="block" fill="solid" color="primary"  strong="true" (click)="punchOut()" [disabled]="!cameraImg">
+              <ion-icon slot="start" name="log-out-outline" size="medium"></ion-icon>
+              Punch Out
+            </ion-button>
+          </ion-col>
+        </ion-row>
+
+        <ion-row *ngIf="punchedOut">
+          <ion-col size="12" class="d-flex justify-content-center">
+            <ion-text color="success" class="text-center">
+              <strong>You have been punched out.</strong>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row *ngIf="(employee && !canPunchInOut && !errorMsg)">
+      <ion-col size="12">
+        <ion-text class="text-center" color="danger">
+          <h6>
+            <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+            <br>
+            <strong>
+              No attendance to be marked due to either of the following reasons:
+            </strong>
+
+            <br>
+            Today is your non-working day,
+            <br>
+            You've already marked today's attendance,
+            <br>
+            You're trying to mark your attendance even before 30 minutes of your assigned punch-in time.
+            <br>
+
+          </h6>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>

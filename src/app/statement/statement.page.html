@@ -1,0 +1,200 @@
+<ion-content>
+
+  <ion-grid class="mt-2">
+
+    <ion-row class="d-flex justify-content-end">
+      <ion-button color="danger" mode="ios" fill="clear" size="medium" (click)="dismissModal()">
+        <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="12" class="text-left">
+        <ion-text color="primary">
+          <h5>
+            <strong>
+              Statement
+            </strong>
+          </h5>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12" *ngIf="errorMsg">
+        <p class="text-center text-danger" *ngIf="!errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg }}
+        </p>
+        <p class="text-center text-danger" *ngIf="errorMsg.status">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+          Error {{ errorMsg.status }} - {{ errorMsg.statusText }}
+        </p>
+      </ion-col>
+    </ion-row>
+
+    <!-- Skeleton view -->
+    <ion-row *ngIf="((!salaryMonths || !empSalaryMonthDetails) && !errorMsg)">
+
+      <ion-col size="12">
+        <ion-row class="d-flex align-items-center">
+          <ion-col size="3" class="d-flex justify-content-start">
+            <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-center">
+            <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="3" class="d-flex justify-content-end">
+            <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <ion-col size="12" *ngFor="let number of sharedFunctions.generateArray(5)">
+        <ion-row>
+          <ion-col size="8" class="d-flex justify-content-start">
+            <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+          </ion-col>
+
+          <ion-col size="4" class="d-flex justify-content-end">
+            <ion-skeleton-text animated style="width: 65%"></ion-skeleton-text>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+    </ion-row>
+
+    <!-- Main salary statement view -->
+    <ion-row *ngIf="(salaryMonths && empSalaryMonthDetails)">
+
+      <ion-col size="12">
+        <ion-row class="d-flex align-items-center">
+          <ion-col size="3" class="d-flex justify-content-start">
+            <ion-button mode="ios" color="dark" fill="clear" size="large" strong="true" (click)="changeReportMonth('backward')" [disabled]="(salaryMonths.length <= 1)">
+              <ion-icon slot="icon-only" name="chevron-back-circle-outline" size="large" color="primary"></ion-icon>
+            </ion-button>
+          </ion-col>
+
+          <ion-col size="6" class="d-flex justify-content-center">
+            <ion-select placeholder="Select a month" id="selectedAttendanceMonth" type="text" class="custom-font" [(ngModel)]="selectedSalaryMonth" (ionChange)="changeReportMonth('selectOption')">
+              <ion-select-option *ngFor="let month of salaryMonths" value="{{ month.monthAndYear }}">
+                {{ month.monthAndYear }}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+
+          <ion-col size="3" class="d-flex justify-content-end">
+            <ion-button mode="ios" color="dark" fill="clear" size="large" strong="true" (click)="changeReportMonth('forward')" [disabled]="(salaryMonths.length <= 1)">
+              <ion-icon slot="icon-only" name="chevron-forward-circle-outline" size="large" color="primary"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+
+      <ion-col size="8" class="text-left">
+        <ion-text>
+          <strong>
+            <small>
+              Working Days
+            </small>
+          </strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="4" class="text-right">
+        <ion-text>
+          <small>
+            {{ empSalaryMonthDetails['workingCount'] | number: '1.2-2' }}
+          </small>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="8" class="text-left">
+        <ion-text>
+          <strong>
+            <small>
+              Paid Leaves (in
+              <span *ngIf="(employee.salaryType === 'daily' || employee.salaryType === 'weekly')">
+                Day(s))
+              </span>
+
+              <span *ngIf="(employee.salaryType === 'hourly')">
+                Hour(s))
+              </span>
+            </small>
+          </strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="4" class="text-right">
+        <ion-text>
+          <small>
+            {{ empSalaryMonthDetails['paidLeavesCount'] | number: '1.2-2' }}
+          </small>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="8" class="text-left">
+        <ion-text>
+          <strong>
+            <small>
+              Total Salary
+            </small>
+          </strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="4" class="text-right">
+        <ion-text>
+          <small>
+            &#8377; {{ empSalaryMonthDetails['totalSalary'] | number: '1.2-2' }}
+          </small>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="8" class="text-left">
+        <ion-text>
+          <strong>
+            <small>
+              Advance
+            </small>
+          </strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="4" class="text-right">
+        <ion-text>
+          <small>
+            &#8377; {{ empSalaryMonthDetails['advanceTaken'] | number: '1.2-2' }}
+          </small>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="8" class="text-left">
+        <ion-text>
+          <strong>
+            Net Salary
+          </strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="4" class="text-right">
+        <ion-text>
+          <strong>
+            &#8377; {{ empSalaryMonthDetails['netSalary'] | number: '1.2-2' }}
+          </strong>
+        </ion-text>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-button strong="true" color="primary" fill="outline" expand="block" size="medium" mode="ios" (click)="viewSalaryMonthSlip(employee, empSalaryMonthDetails)">
+          <ion-icon slot="start" size="medium" name="cash-outline"></ion-icon>
+          View Salary Slip of {{ salaryMonths[selectedMonthIndex].monthAndYear }}
+        </ion-button>
+      </ion-col>
+
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>
